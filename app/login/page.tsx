@@ -4,10 +4,12 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { SpendSyncLogo } from "@/components/ui/spend-sync-logo";
+import { OrbBackground } from "@/components/ui/orb-background";
+import { motion } from "framer-motion";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,63 +33,95 @@ export default function LoginPage() {
       setError("Invalid email or password");
       setLoading(false);
     } else {
-      router.push("/dashboard"); // Redirect to dashboard after login
+      router.push("/dashboard");
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50/50 p-4 dark:bg-gray-950">
-      <Card className="w-full max-w-md shadow-lg border-t-4 border-t-primary">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold tracking-tight text-center">Sign in to SpendSync</CardTitle>
-          <CardDescription className="text-center">
-            Enter your email and password to access your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="flex min-h-screen bg-background">
+      {/* Left Panel - Brand */}
+      <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center bg-background border-r border-border/50 p-12 text-foreground relative overflow-hidden">
+        <OrbBackground />
+        
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, ease: [0.33, 1, 0.68, 1] }}
+          className="relative z-10 flex flex-col items-center gap-10"
+        >
+          <div className="flex h-40 w-40 items-center justify-center rounded-[2.5rem] bg-primary/10 border border-primary/20 backdrop-blur-sm shadow-2xl">
+            <SpendSyncLogo className="h-20 w-20 text-primary" />
+          </div>
+          <span className="font-bold text-7xl lg:text-8xl tracking-tighter text-gradient">SpendSync</span>
+        </motion.div>
+      </div>
+
+      {/* Right Panel - Login Form */}
+      <div className="flex w-full lg:w-1/2 items-center justify-center p-8 md:p-12">
+        <div className="w-full max-w-[400px] space-y-8">
+          <div className="space-y-2 text-center lg:text-left">
+            <h1 className="text-3xl font-semibold tracking-tight">Welcome back</h1>
+            <p className="text-sm text-muted-foreground">
+              Enter your credentials to access your account
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="p-3 text-sm text-red-500 bg-red-50 border border-red-200 rounded-md">
+              <div className="p-3 text-sm font-medium text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
                 {error}
               </div>
             )}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="m@example.com" 
-                required 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
+            
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+                  Email address
+                </Label>
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="name@example.com" 
+                  required 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-11 px-4 transition-all focus:ring-2 focus:ring-primary/20"
+                />
               </div>
-              <Input 
-                id="password" 
-                type="password" 
-                required 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+                    Password
+                  </Label>
+                  <Link href="#" className="text-xs font-medium text-primary hover:underline underline-offset-4">
+                    Forgot password?
+                  </Link>
+                </div>
+                <Input 
+                  id="password" 
+                  type="password" 
+                  required 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-11 px-4 transition-all focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
             </div>
-            <Button className="w-full" type="submit" disabled={loading}>
+
+            <Button className="w-full h-11 text-base font-medium shadow-sm transition-transform active:scale-[0.98]" type="submit" disabled={loading}>
               {loading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-2 text-center text-sm">
-          <div className="text-muted-foreground">
+
+          <p className="text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
-            <Link href="/register" className="text-primary hover:underline font-medium">
-              Sign up
+            <Link href="/register" className="font-semibold text-primary hover:underline underline-offset-4">
+              Create an account
             </Link>
-          </div>
-        </CardFooter>
-      </Card>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

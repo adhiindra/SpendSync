@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { SpendSyncLogo } from "@/components/ui/spend-sync-logo";
+import { OrbBackground } from "@/components/ui/orb-background";
+import { motion } from "framer-motion";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -24,9 +26,7 @@ export default function RegisterPage() {
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
 
@@ -35,7 +35,6 @@ export default function RegisterPage() {
         throw new Error(data.message || "Something went wrong");
       }
 
-      // Registration successful, redirect to login
       router.push("/login");
     } catch (err: any) {
       setError(err.message);
@@ -44,66 +43,100 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50/50 p-4 dark:bg-gray-950">
-      <Card className="w-full max-w-md shadow-lg border-t-4 border-t-primary">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold tracking-tight text-center">Create an account</CardTitle>
-          <CardDescription className="text-center">
-            Enter your information to get started with SpendSync
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="flex min-h-screen bg-background">
+      {/* Left Panel - Brand */}
+      <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center bg-background border-r border-border/50 p-12 text-foreground relative overflow-hidden">
+        <OrbBackground />
+        
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, ease: [0.33, 1, 0.68, 1] }}
+          className="relative z-10 flex flex-col items-center gap-10"
+        >
+          <div className="flex h-40 w-40 items-center justify-center rounded-[2.5rem] bg-primary/10 border border-primary/20 backdrop-blur-sm shadow-2xl">
+            <SpendSyncLogo className="h-20 w-20 text-primary" />
+          </div>
+          <span className="font-bold text-7xl lg:text-8xl tracking-tighter text-gradient">SpendSync</span>
+        </motion.div>
+      </div>
+
+      {/* Right Panel - Register Form */}
+      <div className="flex w-full lg:w-1/2 items-center justify-center p-8 md:p-12">
+        <div className="w-full max-w-[400px] space-y-8">
+          <div className="space-y-2 text-center lg:text-left">
+            <h1 className="text-3xl font-semibold tracking-tight">Create an account</h1>
+            <p className="text-sm text-muted-foreground">
+              Enter your details to get started with SpendSync
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="p-3 text-sm text-red-500 bg-red-50 border border-red-200 rounded-md">
+              <div className="p-3 text-sm font-medium text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
                 {error}
               </div>
             )}
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input 
-                id="name" 
-                placeholder="John Doe" 
-                required 
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
+            
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+                  Full Name
+                </Label>
+                <Input 
+                  id="name" 
+                  type="text" 
+                  placeholder="Jane Doe" 
+                  required 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="h-11 px-4 transition-all focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+                  Email address
+                </Label>
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="name@example.com" 
+                  required 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-11 px-4 transition-all focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+                  Password
+                </Label>
+                <Input 
+                  id="password" 
+                  type="password" 
+                  required 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-11 px-4 transition-all focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="m@example.com" 
-                required 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input 
-                id="password" 
-                type="password" 
-                required 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <Button className="w-full" type="submit" disabled={loading}>
-              {loading ? "Creating account..." : "Sign up"}
+
+            <Button className="w-full h-11 text-base font-medium shadow-sm transition-transform active:scale-[0.98]" type="submit" disabled={loading}>
+              {loading ? "Creating account..." : "Create account"}
             </Button>
           </form>
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-2 text-center text-sm">
-          <div className="text-muted-foreground">
+
+          <p className="text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link href="/login" className="text-primary hover:underline font-medium">
-              Sign in
+            <Link href="/login" className="font-semibold text-primary hover:underline underline-offset-4">
+              Sign in instead
             </Link>
-          </div>
-        </CardFooter>
-      </Card>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
