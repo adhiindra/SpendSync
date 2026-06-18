@@ -31,7 +31,7 @@ export function ExportButton({
     // Company / Header
     doc.setFontSize(22)
     doc.setTextColor(40, 40, 40)
-    doc.text("SpendSync", 14, 22)
+    doc.text("FlowSync", 14, 22)
     
     doc.setFontSize(14)
     doc.setTextColor(100, 100, 100)
@@ -83,7 +83,7 @@ export function ExportButton({
     }
 
     // Save
-    doc.save(`SpendSync_Report_${year}_${month.toString().padStart(2, '0')}.pdf`)
+    doc.save(`FlowSync_Report_${year}_${month.toString().padStart(2, '0')}.pdf`)
   }
 
   return (

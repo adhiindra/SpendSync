@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { SpendSyncLogo } from "@/components/ui/spend-sync-logo";
+import { FlowSyncLogo } from "@/components/ui/flow-sync-logo";
 import { OrbBackground } from "@/components/ui/orb-background";
 import { motion } from "framer-motion";
 
@@ -50,9 +50,9 @@ export default function LoginPage() {
           className="relative z-10 flex flex-col items-center gap-10"
         >
           <div className="flex h-40 w-40 items-center justify-center rounded-[2.5rem] bg-primary/10 border border-primary/20 backdrop-blur-sm shadow-2xl">
-            <SpendSyncLogo className="h-20 w-20 text-primary" />
+            <FlowSyncLogo className="h-20 w-20 text-primary" />
           </div>
-          <span className="font-bold text-7xl lg:text-8xl tracking-tighter text-gradient">SpendSync</span>
+          <span className="font-bold text-7xl lg:text-8xl tracking-tighter text-gradient">FlowSync</span>
         </motion.div>
       </div>
 

@@ -14,7 +14,7 @@ const ibmMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SpendSync",
+  title: "FlowSync",
   description: "Track your income and expenses seamlessly.",
 };
 

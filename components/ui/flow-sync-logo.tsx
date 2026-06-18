@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-export function SpendSyncLogo({ className }: { className?: string }) {
+export function FlowSyncLogo({ className }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -1,7 +1,7 @@
-# Product Requirements Document (PRD): SpendSync
+# Product Requirements Document (PRD): FlowSync
 
 ## 1. Product Overview
-**SpendSync** is a Progressive Web Application (PWA) designed to help individuals and families track their monthly income and expenses. The application provides a seamless, app-like experience across desktop and mobile devices. A core feature of SpendSync is its "Family Setting," allowing multiple users to collaboratively manage and view shared financial records.
+**FlowSync** is a Progressive Web Application (PWA) designed to help individuals and families track their monthly income and expenses. The application provides a seamless, app-like experience across desktop and mobile devices. A core feature of FlowSync is its "Family Setting," allowing multiple users to collaboratively manage and view shared financial records.
 
 ## 2. Tech Stack & Infrastructure
 * **Framework:** Next.js (App Router for optimal server-side rendering and API management).

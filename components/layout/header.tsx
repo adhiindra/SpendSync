@@ -6,7 +6,7 @@ import { Bell, Search, LogOut, User as UserIcon, Sun, Moon, Settings, Menu } fro
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SpendSyncLogo } from "@/components/ui/spend-sync-logo";
+import { FlowSyncLogo } from "@/components/ui/flow-sync-logo";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
@@ -44,8 +44,8 @@ export function Header() {
           <SheetContent side="left" className="w-[280px] sm:w-[350px]">
             <SheetHeader>
               <SheetTitle className="flex items-center gap-2">
-                <SpendSyncLogo className="h-6 w-6 text-primary" />
-                <span>SpendSync</span>
+                <FlowSyncLogo className="h-6 w-6 text-primary" />
+                <span>FlowSync</span>
               </SheetTitle>
             </SheetHeader>
             <nav className="flex flex-col gap-4 mt-8">
@@ -70,8 +70,8 @@ export function Header() {
         </Sheet>
 
         <Link href="/dashboard" className="hidden md:flex items-center gap-2 font-bold tracking-tight text-xl mr-2">
-          <SpendSyncLogo className="h-6 w-6 text-primary" />
-          <span className="hidden sm:inline-block">SpendSync</span>
+          <FlowSyncLogo className="h-6 w-6 text-primary" />
+          <span className="hidden sm:inline-block">FlowSync</span>
         </Link>
 
         <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">

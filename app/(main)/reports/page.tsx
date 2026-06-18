@@ -2,7 +2,7 @@ import { ReportDashboard } from "@/modules/reports/components/report-dashboard"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Reports | SpendSync",
+  title: "Reports | FlowSync",
   description: "View your financial reports and trends.",
 }
 
