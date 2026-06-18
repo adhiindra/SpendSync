@@ -48,9 +48,9 @@ export function DashboardClient({
             Welcome back, {session?.user?.name || session?.user?.email?.split('@')[0]}. Here's your financial status.
           </p>
         </div>
-        
+
         <div className="flex gap-2">
-          <TransactionDialog 
+          <TransactionDialog
             categories={categories}
             defaultType="EXPENSE"
             trigger={
@@ -61,7 +61,7 @@ export function DashboardClient({
             }
             onSuccess={() => router.refresh()}
           />
-          <TransactionDialog 
+          <TransactionDialog
             categories={categories}
             defaultType="INCOME"
             trigger={

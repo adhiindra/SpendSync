@@ -38,9 +38,9 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="container mx-auto py-10 max-w-2xl">
+    <div className="container mx-auto max-w-2xl">
       <h1 className="text-3xl font-bold tracking-tight mb-6">Settings</h1>
-      
+
       <Card>
         <CardHeader>
           <CardTitle>Preferences</CardTitle>

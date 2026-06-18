@@ -63,66 +63,122 @@ export function TransactionList({
 
   return (
     <div className="rounded-xl bg-card/40 backdrop-blur-md shadow-lg border border-white/30 dark:border-white/10 ring-1 ring-foreground/5 overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead className="text-right">Amount</TableHead>
-            {!hideActions && <TableHead className="text-right">Actions</TableHead>}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {transactions.map((tx) => (
-            <TableRow key={tx.id}>
-              <TableCell className="whitespace-nowrap">{format(new Date(tx.date), "MMM d, yyyy")}</TableCell>
-              <TableCell>{tx.description || "-"}</TableCell>
-              <TableCell>
-                <span
-                  className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                  style={{ 
-                    backgroundColor: tx.category.color ? `${tx.category.color}20` : '#f3f4f6', 
-                    color: tx.category.color || 'inherit' 
-                  }}
-                >
-                  {tx.category.name}
-                </span>
-              </TableCell>
-              <TableCell className={`text-right font-medium ${tx.type === 'INCOME' ? 'text-emerald-500' : 'text-slate-900 dark:text-slate-100'}`}>
-                {tx.type === 'INCOME' ? '+' : '-'}{formatCurrency(tx.amount, userCurrency)}
-              </TableCell>
-              {!hideActions && (
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <TransactionDialog 
-                      categories={categories} 
-                      transaction={tx}
-                      trigger={
-                        <Button variant="ghost" size="icon-sm" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                          <Edit className="h-4 w-4" />
-                          <span className="sr-only">Edit</span>
-                        </Button>
-                      }
-                      onSuccess={onChange}
-                    />
-                    <Button 
-                      variant="ghost" 
-                      size="icon-sm" 
-                      className="h-8 w-8 text-muted-foreground hover:text-red-500"
-                      onClick={() => handleDelete(tx.id)}
-                      disabled={isPending && deletingId === tx.id}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      <span className="sr-only">Delete</span>
-                    </Button>
-                  </div>
-                </TableCell>
-              )}
+      {/* Desktop Table View */}
+      <div className="hidden md:block">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead className="text-right">Amount</TableHead>
+              {!hideActions && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {transactions.map((tx) => (
+              <TableRow key={tx.id}>
+                <TableCell className="whitespace-nowrap">{format(new Date(tx.date), "MMM d, yyyy")}</TableCell>
+                <TableCell>{tx.description || "-"}</TableCell>
+                <TableCell>
+                  <span
+                    className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                    style={{ 
+                      backgroundColor: tx.category.color ? `${tx.category.color}20` : '#f3f4f6', 
+                      color: tx.category.color || 'inherit' 
+                    }}
+                  >
+                    {tx.category.name}
+                  </span>
+                </TableCell>
+                <TableCell className={`text-right font-medium ${tx.type === 'INCOME' ? 'text-emerald-500' : 'text-slate-900 dark:text-slate-100'}`}>
+                  {tx.type === 'INCOME' ? '+' : '-'}{formatCurrency(tx.amount, userCurrency)}
+                </TableCell>
+                {!hideActions && (
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <TransactionDialog 
+                        categories={categories} 
+                        transaction={tx}
+                        trigger={
+                          <Button variant="ghost" size="icon-sm" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                            <Edit className="h-4 w-4" />
+                            <span className="sr-only">Edit</span>
+                          </Button>
+                        }
+                        onSuccess={onChange}
+                      />
+                      <Button 
+                        variant="ghost" 
+                        size="icon-sm" 
+                        className="h-8 w-8 text-muted-foreground hover:text-red-500"
+                        onClick={() => handleDelete(tx.id)}
+                        disabled={isPending && deletingId === tx.id}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Delete</span>
+                      </Button>
+                    </div>
+                  </TableCell>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Mobile List View */}
+      <div className="md:hidden flex flex-col divide-y divide-border/50">
+        {transactions.map((tx) => (
+          <div key={tx.id} className="flex flex-col p-4 gap-3">
+            <div className="flex justify-between items-start gap-4">
+              <div className="flex flex-col min-w-0">
+                <span className="font-medium text-sm truncate">{tx.description || tx.category.name}</span>
+                <span className="text-xs text-muted-foreground mt-0.5">{format(new Date(tx.date), "MMM d, yyyy")}</span>
+              </div>
+              <div className={`text-right font-medium text-sm whitespace-nowrap ${tx.type === 'INCOME' ? 'text-emerald-500' : 'text-slate-900 dark:text-slate-100'}`}>
+                {tx.type === 'INCOME' ? '+' : '-'}{formatCurrency(tx.amount, userCurrency)}
+              </div>
+            </div>
+            <div className="flex justify-between items-center">
+              <span
+                className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                style={{ 
+                  backgroundColor: tx.category.color ? `${tx.category.color}20` : '#f3f4f6', 
+                  color: tx.category.color || 'inherit' 
+                }}
+              >
+                {tx.category.name}
+              </span>
+              {!hideActions && (
+                <div className="flex justify-end gap-1">
+                  <TransactionDialog 
+                    categories={categories} 
+                    transaction={tx}
+                    trigger={
+                      <Button variant="ghost" size="icon-sm" className="h-7 w-7 text-muted-foreground hover:text-foreground">
+                        <Edit className="h-3.5 w-3.5" />
+                        <span className="sr-only">Edit</span>
+                      </Button>
+                    }
+                    onSuccess={onChange}
+                  />
+                  <Button 
+                    variant="ghost" 
+                    size="icon-sm" 
+                    className="h-7 w-7 text-muted-foreground hover:text-red-500"
+                    onClick={() => handleDelete(tx.id)}
+                    disabled={isPending && deletingId === tx.id}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span className="sr-only">Delete</span>
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

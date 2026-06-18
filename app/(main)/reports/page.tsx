@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function ReportsPage() {
   return (
-    <div className="container mx-auto py-10 max-w-6xl">
+    <div className="container mx-auto max-w-6xl">
       <ReportDashboard />
     </div>
   )

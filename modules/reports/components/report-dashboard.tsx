@@ -19,7 +19,7 @@ import { formatCurrency } from "@/lib/format"
 export function ReportDashboard() {
   const [year, setYear] = useState(new Date().getFullYear())
   const [month, setMonth] = useState(new Date().getMonth() + 1)
-  
+
   const [summary, setSummary] = useState<MonthlySummary | null>(null)
   const [expenseBreakdown, setExpenseBreakdown] = useState<CategoryBreakdown[]>([])
   const [incomeBreakdown, setIncomeBreakdown] = useState<CategoryBreakdown[]>([])
@@ -81,7 +81,7 @@ export function ReportDashboard() {
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <h1 className="text-3xl font-bold tracking-tight">Financial Report</h1>
-        <div className="flex items-center gap-2 print:hidden">
+        <div className="flex items-center gap-2 print:hidden flex-wrap">
           <Select value={month.toString()} onValueChange={(v) => setMonth(Number(v))}>
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Month">
@@ -106,11 +106,11 @@ export function ReportDashboard() {
               ))}
             </SelectContent>
           </Select>
-          <ExportButton 
-            year={year} 
-            month={month} 
-            summary={summary} 
-            transactions={transactions} 
+          <ExportButton
+            year={year}
+            month={month}
+            summary={summary}
+            transactions={transactions}
           />
         </div>
       </div>

@@ -44,7 +44,7 @@ export function CashFlowChart({ data }: { data: { month: string; income: number;
               axisLine={false}
               tickMargin={8}
             />
-            <YAxis 
+            <YAxis
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => formatCurrency(value, userCurrency, { maximumFractionDigits: 0, minimumFractionDigits: 0 })}
