@@ -20,7 +20,7 @@ export default async function DashboardLayout({
         <OrbBackground />
         <div className="flex-1 h-screen overflow-y-auto flex flex-col min-w-0 z-10 bg-transparent relative">
           <Header />
-          <main className="flex-1 px-4 lg:px-8 py-5 relative">
+          <main className="flex-1 px-4 lg:px-14 py-5 relative">
             {children}
           </main>
         </div>
