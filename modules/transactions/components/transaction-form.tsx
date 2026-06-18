@@ -26,10 +26,12 @@ type FormData = z.infer<typeof formSchema>
 export function TransactionForm({
   categories,
   initialData,
+  defaultType = "EXPENSE",
   onSuccess
 }: {
   categories: Category[]
   initialData?: TransactionWithCategory
+  defaultType?: "INCOME" | "EXPENSE"
   onSuccess?: () => void
 }) {
   const [isLoading, setIsLoading] = useState(false)
@@ -42,7 +44,7 @@ export function TransactionForm({
       date: new Date(initialData.date).toISOString().split('T')[0],
       description: initialData.description || "",
     } : {
-      type: "EXPENSE",
+      type: defaultType,
       date: new Date().toISOString().split('T')[0], // YYYY-MM-DD for simple date input
     }
   })

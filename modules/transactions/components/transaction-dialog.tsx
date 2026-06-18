@@ -17,11 +17,13 @@ import * as React from "react"
 export function TransactionDialog({ 
   categories, 
   transaction,
+  defaultType,
   trigger,
   onSuccess
 }: { 
   categories: Category[]
   transaction?: TransactionWithCategory
+  defaultType?: "INCOME" | "EXPENSE"
   trigger?: React.ReactElement
   onSuccess?: () => void
 }) {
@@ -38,6 +40,7 @@ export function TransactionDialog({
         <TransactionForm 
           categories={categories} 
           initialData={transaction}
+          defaultType={defaultType}
           onSuccess={() => {
             setOpen(false)
             onSuccess?.()
