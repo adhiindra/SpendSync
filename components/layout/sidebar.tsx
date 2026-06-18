@@ -18,7 +18,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-10 hidden w-64 flex-col border-r bg-sidebar md:flex">
+    <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col border-r bg-sidebar md:flex">
       <div className="flex h-16 shrink-0 items-center px-6 border-b border-border/50">
         <Link href="/dashboard" className="flex items-center gap-2 font-bold tracking-tight text-xl">
           <SpendSyncLogo className="h-6 w-6 text-primary" />

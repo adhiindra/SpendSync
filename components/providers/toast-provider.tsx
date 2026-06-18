@@ -1,0 +1,16 @@
+"use client";
+
+import { useEffect } from "react";
+import { mountToaster } from "gooey-toast";
+import "gooey-toast/styles.css";
+
+export function ToastProvider() {
+  useEffect(() => {
+    const handle = mountToaster({
+      position: "bottom-right",
+    });
+    return () => handle.unmount();
+  }, []);
+
+  return null;
+}
