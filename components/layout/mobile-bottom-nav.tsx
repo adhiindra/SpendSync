@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/components/providers/i18n-provider";
-import { LayoutDashboard, ReceiptText, PieChart, Users } from "lucide-react";
+import { LayoutDashboard, ReceiptText, PieChart, Users, CreditCard } from "lucide-react";
 import clsx from "clsx";
 
 export function MobileBottomNav() {
@@ -14,6 +14,7 @@ export function MobileBottomNav() {
     { name: t("dashboard"), href: "/dashboard", icon: LayoutDashboard },
     { name: t("transactions"), href: "/transactions", icon: ReceiptText },
     { name: t("reports"), href: "/reports", icon: PieChart },
+    { name: t("installments"), href: "/installments", icon: CreditCard },
     { name: t("family"), href: "/family", icon: Users },
   ];
 

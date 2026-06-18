@@ -22,6 +22,7 @@ export function Header() {
     { name: t("dashboard"), href: "/dashboard" },
     { name: t("transactions"), href: "/transactions" },
     { name: t("reports"), href: "/reports" },
+    { name: t("installments"), href: "/installments" },
     { name: t("family"), href: "/family" },
   ];
   const { theme, setTheme } = useTheme();

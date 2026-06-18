@@ -43,7 +43,13 @@
 * Comparison features (e.g., comparing current month spending against previous months).
 * **PDF Export:** A feature to generate and download a clean, formatted PDF report of the selected month's ledger for external record-keeping.
 
-### 3.5. Family Settings (Shared Ledgers)
+### 3.5. Installments Tracking
+* Track long-term payments (e.g., loans, electronics) over a scheduled period.
+* Automatically generate a monthly payment schedule based on the total amount and duration.
+* Track payment progress by marking off individual months as paid.
+* Personal tracking not shared across family ledgers.
+
+### 3.6. Family Settings (Shared Ledgers)
 * Role-based access control (RBAC) allowing the primary account holder to invite other users via email.
 * **Permissions:** Ability to grant "View Only" or "View & Edit" rights to connected family members.
 * Real-time or near-real-time synchronization so all linked accounts see updated balances and logged transactions instantly.
