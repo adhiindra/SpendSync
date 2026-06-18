@@ -2,14 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { getMonthlySummary, getCategoryBreakdown, getMonthlyTrends, getMonthlyTransactions } from "../actions"
-import { getCategories } from "@/modules/transactions/actions"
 import { MonthlySummary, CategoryBreakdown, MonthlyTrend } from "../types"
 import { CategoryPieChart } from "./category-pie-chart"
 import { TrendBarChart } from "./trend-bar-chart"
 import { ExportButton } from "./export-button"
 import { TransactionList } from "@/modules/transactions/components/transaction-list"
-import { TransactionWithCategory } from "@/modules/transactions/types"
-import { Category } from "@prisma/client"
+import { Transaction } from "@prisma/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Wallet, TrendingDown, TrendingUp } from "lucide-react"
@@ -24,8 +22,7 @@ export function ReportDashboard() {
   const [expenseBreakdown, setExpenseBreakdown] = useState<CategoryBreakdown[]>([])
   const [incomeBreakdown, setIncomeBreakdown] = useState<CategoryBreakdown[]>([])
   const [trends, setTrends] = useState<MonthlyTrend[]>([])
-  const [transactions, setTransactions] = useState<TransactionWithCategory[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
+  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   const { data: session } = useSession()
@@ -34,20 +31,18 @@ export function ReportDashboard() {
   async function loadData() {
     setIsLoading(true)
     try {
-      const [sum, expenses, incomes, trnds, txs, cats] = await Promise.all([
+      const [sum, expenses, incomes, trnds, txs] = await Promise.all([
         getMonthlySummary(year, month),
         getCategoryBreakdown(year, month, "EXPENSE"),
         getCategoryBreakdown(year, month, "INCOME"),
         getMonthlyTrends(year),
-        getMonthlyTransactions(year, month),
-        getCategories()
+        getMonthlyTransactions(year, month)
       ])
       setSummary(sum)
       setExpenseBreakdown(expenses)
       setIncomeBreakdown(incomes)
       setTrends(trnds)
       setTransactions(txs)
-      setCategories(cats)
     } catch (error) {
       console.error("Failed to load reports data", error)
     } finally {
@@ -164,7 +159,7 @@ export function ReportDashboard() {
 
       <div className="mt-8 space-y-4">
         <h2 className="text-xl font-semibold tracking-tight">Transaction History</h2>
-        <TransactionList transactions={transactions} categories={categories} hideActions />
+        <TransactionList transactions={transactions} hideActions />
       </div>
     </div>
   )

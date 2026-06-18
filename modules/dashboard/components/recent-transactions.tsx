@@ -1,13 +1,14 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { TransactionWithCategory } from "@/modules/transactions/types"
+import { Transaction } from "@prisma/client"
+import { CATEGORIES } from "@/lib/categories"
 import { format } from "date-fns"
 import { useSession } from "next-auth/react"
 import { formatCurrency } from "@/lib/format"
 import { Receipt } from "lucide-react"
 
-export function RecentTransactions({ transactions }: { transactions: TransactionWithCategory[] }) {
+export function RecentTransactions({ transactions }: { transactions: Transaction[] }) {
   const { data: session } = useSession()
   const userCurrency = session?.user?.currency || "USD"
 
@@ -24,23 +25,25 @@ export function RecentTransactions({ transactions }: { transactions: Transaction
           </div>
         ) : (
           <div className="space-y-6">
-            {transactions.map((tx) => (
+            {transactions.map((tx) => {
+              const category = CATEGORIES.find(c => c.id === tx.category)
+              return (
               <div key={tx.id} className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div 
                     className="h-10 w-10 rounded-full flex items-center justify-center border"
                     style={{ 
-                      backgroundColor: tx.category.color ? `${tx.category.color}20` : '#f3f4f6', 
-                      borderColor: tx.category.color ? `${tx.category.color}40` : 'var(--border)'
+                      backgroundColor: category?.color ? `${category.color}20` : '#f3f4f6', 
+                      borderColor: category?.color ? `${category.color}40` : 'var(--border)'
                     }}
                   >
                     <Receipt 
                       className="h-4 w-4" 
-                      style={{ color: tx.category.color || 'var(--muted-foreground)' }} 
+                      style={{ color: category?.color || 'var(--muted-foreground)' }} 
                     />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{tx.description || tx.category.name}</p>
+                    <p className="text-sm font-medium">{tx.description || category?.name || tx.category}</p>
                     <p className="text-xs text-muted-foreground">{format(new Date(tx.date), "MMM d, yyyy")}</p>
                   </div>
                 </div>
@@ -48,7 +51,8 @@ export function RecentTransactions({ transactions }: { transactions: Transaction
                   {tx.type === 'INCOME' ? '+' : '-'}{formatCurrency(tx.amount, userCurrency)}
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </CardContent>

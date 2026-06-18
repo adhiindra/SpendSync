@@ -1,13 +1,9 @@
-import { Transaction, Category } from "@prisma/client"
-
-export type TransactionWithCategory = Transaction & {
-  category: Category
-}
+import { Transaction } from "@prisma/client"
 
 export type CreateTransactionInput = {
   amount: number
   type: "INCOME" | "EXPENSE"
-  categoryId: string
+  category: string
   date: Date
   description?: string
 }

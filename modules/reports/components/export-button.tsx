@@ -5,7 +5,8 @@ import { Download } from "lucide-react"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import { MonthlySummary } from "../types"
-import { TransactionWithCategory } from "@/modules/transactions/types"
+import { CATEGORIES } from "@/lib/categories"
+import { Transaction } from "@prisma/client"
 import { format } from "date-fns"
 import { useSession } from "next-auth/react"
 import { formatCurrency } from "@/lib/format"
@@ -19,7 +20,7 @@ export function ExportButton({
   year: number
   month: number
   summary: MonthlySummary | null
-  transactions: TransactionWithCategory[]
+  transactions: Transaction[]
 }) {
   const { data: session } = useSession()
   const userCurrency = session?.user?.currency || "USD"
@@ -61,7 +62,7 @@ export function ExportButton({
       const tableData = transactions.map(tx => [
         format(new Date(tx.date), "MMM d, yyyy"),
         tx.description || "-",
-        tx.category.name,
+        CATEGORIES.find(c => c.id === tx.category)?.name || tx.category,
         tx.type === "INCOME" ? "Income" : "Expense",
         (tx.type === "INCOME" ? "+" : "-") + formatCurrency(tx.amount, userCurrency)
       ])

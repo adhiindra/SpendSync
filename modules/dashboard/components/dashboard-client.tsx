@@ -3,8 +3,7 @@
 import { useSession } from "next-auth/react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowUpRight, ArrowDownRight, Wallet, Activity } from "lucide-react"
-import { TransactionWithCategory } from "@/modules/transactions/types"
-import { Category } from "@prisma/client"
+import { Transaction } from "@prisma/client"
 import { CashFlowChart } from "./cash-flow-chart"
 import { RecentTransactions } from "./recent-transactions"
 import { formatCurrency } from "@/lib/format"
@@ -17,12 +16,10 @@ export function DashboardClient({
   metrics,
   cashFlow,
   transactions,
-  categories
 }: {
   metrics: { totalBalance: number; monthlyIncome: number; monthlyExpense: number }
   cashFlow: { month: string; income: number; expense: number }[]
-  transactions: TransactionWithCategory[]
-  categories: Category[]
+  transactions: Transaction[]
 }) {
   const { data: session, status } = useSession()
   const userCurrency = session?.user?.currency || "USD"
@@ -51,7 +48,6 @@ export function DashboardClient({
 
         <div className="flex gap-2">
           <TransactionDialog
-            categories={categories}
             defaultType="EXPENSE"
             trigger={
               <Button variant="outline" className="gap-2">
@@ -62,7 +58,6 @@ export function DashboardClient({
             onSuccess={() => router.refresh()}
           />
           <TransactionDialog
-            categories={categories}
             defaultType="INCOME"
             trigger={
               <Button className="gap-2">

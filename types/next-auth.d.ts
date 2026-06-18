@@ -7,12 +7,16 @@ declare module "next-auth" {
       id: string
       currency: string
       language: string
+      ocrMode: string
+      hasGeminiKey?: boolean
     } & DefaultSession["user"]
   }
 
   interface User {
     currency: string
     language: string
+    ocrMode: string
+    hasGeminiKey?: boolean
   }
 }
 
@@ -21,5 +25,7 @@ declare module "next-auth/jwt" {
     id: string
     currency: string
     language: string
+    ocrMode: string
+    hasGeminiKey?: boolean
   }
 }

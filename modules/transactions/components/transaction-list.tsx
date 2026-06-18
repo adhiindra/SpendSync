@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { TransactionWithCategory } from "../types"
-import { Category } from "@prisma/client"
+import { Transaction } from "@prisma/client"
+import { CATEGORIES } from "@/lib/categories"
 import { deleteTransaction } from "../actions"
 import { TransactionDialog } from "./transaction-dialog"
 import { toast } from "gooey-toast"
@@ -22,12 +22,10 @@ import { formatCurrency } from "@/lib/format"
 
 export function TransactionList({ 
   transactions, 
-  categories,
   onChange,
   hideActions = false
 }: { 
-  transactions: TransactionWithCategory[]
-  categories: Category[]
+  transactions: Transaction[]
   onChange?: () => void
   hideActions?: boolean
 }) {
@@ -76,7 +74,9 @@ export function TransactionList({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {transactions.map((tx) => (
+            {transactions.map((tx) => {
+              const category = CATEGORIES.find(c => c.id === tx.category)
+              return (
               <TableRow key={tx.id}>
                 <TableCell className="whitespace-nowrap">{format(new Date(tx.date), "MMM d, yyyy")}</TableCell>
                 <TableCell>{tx.description || "-"}</TableCell>
@@ -84,11 +84,11 @@ export function TransactionList({
                   <span
                     className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
                     style={{ 
-                      backgroundColor: tx.category.color ? `${tx.category.color}20` : '#f3f4f6', 
-                      color: tx.category.color || 'inherit' 
+                      backgroundColor: category?.color ? `${category.color}20` : '#f3f4f6', 
+                      color: category?.color || 'inherit' 
                     }}
                   >
-                    {tx.category.name}
+                    {category?.name || tx.category}
                   </span>
                 </TableCell>
                 <TableCell className={`text-right font-medium ${tx.type === 'INCOME' ? 'text-emerald-500' : 'text-slate-900 dark:text-slate-100'}`}>
@@ -98,7 +98,6 @@ export function TransactionList({
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <TransactionDialog 
-                        categories={categories} 
                         transaction={tx}
                         trigger={
                           <Button variant="ghost" size="icon-sm" className="h-8 w-8 text-muted-foreground hover:text-foreground">
@@ -122,18 +121,21 @@ export function TransactionList({
                   </TableCell>
                 )}
               </TableRow>
-            ))}
+              )
+            })}
           </TableBody>
         </Table>
       </div>
 
       {/* Mobile List View */}
       <div className="md:hidden flex flex-col divide-y divide-border/50">
-        {transactions.map((tx) => (
+        {transactions.map((tx) => {
+          const category = CATEGORIES.find(c => c.id === tx.category)
+          return (
           <div key={tx.id} className="flex flex-col p-4 gap-3">
             <div className="flex justify-between items-start gap-4">
               <div className="flex flex-col min-w-0">
-                <span className="font-medium text-sm truncate">{tx.description || tx.category.name}</span>
+                <span className="font-medium text-sm truncate">{tx.description || category?.name || tx.category}</span>
                 <span className="text-xs text-muted-foreground mt-0.5">{format(new Date(tx.date), "MMM d, yyyy")}</span>
               </div>
               <div className={`text-right font-medium text-sm whitespace-nowrap ${tx.type === 'INCOME' ? 'text-emerald-500' : 'text-slate-900 dark:text-slate-100'}`}>
@@ -144,16 +146,15 @@ export function TransactionList({
               <span
                 className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold"
                 style={{ 
-                  backgroundColor: tx.category.color ? `${tx.category.color}20` : '#f3f4f6', 
-                  color: tx.category.color || 'inherit' 
+                  backgroundColor: category?.color ? `${category.color}20` : '#f3f4f6', 
+                  color: category?.color || 'inherit' 
                 }}
               >
-                {tx.category.name}
+                {category?.name || tx.category}
               </span>
               {!hideActions && (
                 <div className="flex justify-end gap-1">
                   <TransactionDialog 
-                    categories={categories} 
                     transaction={tx}
                     trigger={
                       <Button variant="ghost" size="icon-sm" className="h-7 w-7 text-muted-foreground hover:text-foreground">
@@ -177,7 +178,8 @@ export function TransactionList({
               )}
             </div>
           </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

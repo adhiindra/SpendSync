@@ -4,9 +4,10 @@ import prisma from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { CategoryBreakdown, MonthlySummary, MonthlyTrend } from "./types"
-import { TransactionWithCategory } from "@/modules/transactions/types"
+import { Transaction } from "@prisma/client"
+import { CATEGORIES } from "@/lib/categories"
 
-export async function getMonthlyTransactions(year: number, month: number): Promise<TransactionWithCategory[]> {
+export async function getMonthlyTransactions(year: number, month: number): Promise<Transaction[]> {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) throw new Error("Unauthorized")
 
@@ -20,9 +21,6 @@ export async function getMonthlyTransactions(year: number, month: number): Promi
         gte: startDate,
         lt: endDate,
       },
-    },
-    include: {
-      category: true,
     },
     orderBy: { date: "desc" },
   })
@@ -79,20 +77,18 @@ export async function getCategoryBreakdown(year: number, month: number, type: "I
         lt: endDate,
       },
     },
-    include: {
-      category: true,
-    },
   })
 
   const breakdownMap = new Map<string, CategoryBreakdown>()
 
   transactions.forEach((tx) => {
-    const current = breakdownMap.get(tx.categoryId)
+    const current = breakdownMap.get(tx.category)
     if (current) {
       current.totalAmount += tx.amount
     } else {
-      breakdownMap.set(tx.categoryId, {
-        category: tx.category,
+      const catObj = CATEGORIES.find(c => c.id === tx.category) || CATEGORIES.find(c => c.id === "Other")!
+      breakdownMap.set(tx.category, {
+        category: catObj,
         totalAmount: tx.amount,
       })
     }

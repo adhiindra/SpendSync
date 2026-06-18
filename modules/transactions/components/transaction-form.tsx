@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { Category } from "@prisma/client"
+import { CATEGORIES } from "@/lib/categories"
+import { Transaction } from "@prisma/client"
 import { createTransaction, updateTransaction } from "../actions"
-import { TransactionWithCategory } from "../types"
+import { OcrExtractedData } from "./ocr-upload"
 import { toast } from "gooey-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const formSchema = z.object({
   amount: z.string().refine(val => !isNaN(Number(val)) && Number(val) > 0, "Amount must be a positive number"),
   type: z.enum(["INCOME", "EXPENSE"]),
-  categoryId: z.string().min(1, "Please select a category"),
+  category: z.string().min(1, "Please select a category"),
   date: z.string().min(1, "Please select a date"),
   description: z.string().optional(),
 })
@@ -24,14 +25,14 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>
 
 export function TransactionForm({
-  categories,
   initialData,
   defaultType = "EXPENSE",
+  prefillData,
   onSuccess
 }: {
-  categories: Category[]
-  initialData?: TransactionWithCategory
+  initialData?: Transaction
   defaultType?: "INCOME" | "EXPENSE"
+  prefillData?: OcrExtractedData
   onSuccess?: () => void
 }) {
   const [isLoading, setIsLoading] = useState(false)
@@ -40,16 +41,27 @@ export function TransactionForm({
     defaultValues: initialData ? {
       amount: initialData.amount.toString(),
       type: initialData.type as "INCOME" | "EXPENSE",
-      categoryId: initialData.categoryId,
+      category: initialData.category,
       date: new Date(initialData.date).toISOString().split('T')[0],
       description: initialData.description || "",
     } : {
       type: defaultType,
+      category: "",
       date: new Date().toISOString().split('T')[0], // YYYY-MM-DD for simple date input
     }
   })
 
   const selectedType = watch("type")
+
+  // Pre-fill form when OCR data arrives
+  useEffect(() => {
+    if (!prefillData) return
+    if (prefillData.amount) setValue("amount", prefillData.amount)
+    if (prefillData.date) setValue("date", prefillData.date)
+    if (prefillData.description) setValue("description", prefillData.description)
+    if (prefillData.type) setValue("type", prefillData.type)
+    if (prefillData.category) setValue("category", prefillData.category)
+  }, [prefillData, setValue])
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -59,7 +71,7 @@ export function TransactionForm({
           id: initialData.id,
           amount: Number(data.amount),
           type: data.type,
-          categoryId: data.categoryId,
+          category: data.category,
           date: new Date(data.date),
           description: data.description,
         })
@@ -68,7 +80,7 @@ export function TransactionForm({
         await createTransaction({
           amount: Number(data.amount),
           type: data.type,
-          categoryId: data.categoryId,
+          category: data.category,
           date: new Date(data.date),
           description: data.description,
         })
@@ -109,25 +121,25 @@ export function TransactionForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="categoryId">Category</Label>
+        <Label htmlFor="category">Category</Label>
         <Select
-          value={watch("categoryId")}
-          onValueChange={(value: string | null) => { if (value) setValue("categoryId", value) }}
+          value={watch("category")}
+          onValueChange={(value: string | null) => { if (value) setValue("category", value) }}
         >
-          <SelectTrigger>
+          <SelectTrigger id="category">
             <SelectValue placeholder="Select category">
-              {watch("categoryId") ? categories.find(c => c.id === watch("categoryId"))?.name : "Select category"}
+              {watch("category") ? CATEGORIES.find(c => c.id === watch("category"))?.name : "Select category"}
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            {categories.filter(c => c.type === selectedType).map(category => (
+            {CATEGORIES.filter(c => c.type === selectedType).map(category => (
               <SelectItem key={category.id} value={category.id}>
                 {category.name}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        {errors.categoryId && <p className="text-sm text-red-500">{errors.categoryId.message as string}</p>}
+        {errors.category && <p className="text-sm text-red-500">{errors.category.message as string}</p>}
       </div>
 
       <div className="space-y-2">

@@ -12,14 +12,7 @@ export async function getTransactions() {
 
   return await prisma.transaction.findMany({
     where: { userId: session.user.id },
-    include: { category: true },
     orderBy: { date: "desc" },
-  })
-}
-
-export async function getCategories() {
-  return await prisma.category.findMany({
-    orderBy: { name: "asc" },
   })
 }
 
@@ -62,20 +55,4 @@ export async function deleteTransaction(id: string) {
   })
 
   revalidatePath("/transactions")
-}
-
-// Seed categories if none exist (temporary utility)
-export async function seedCategories() {
-  const count = await prisma.category.count()
-  if (count === 0) {
-    await prisma.category.createMany({
-      data: [
-        { name: "Salary", type: "INCOME", color: "#10B981" },
-        { name: "Groceries", type: "EXPENSE", color: "#EF4444" },
-        { name: "Utilities", type: "EXPENSE", color: "#3B82F6" },
-        { name: "Entertainment", type: "EXPENSE", color: "#8B5CF6" },
-        { name: "Rent/Mortgage", type: "EXPENSE", color: "#F59E0B" },
-      ]
-    })
-  }
 }

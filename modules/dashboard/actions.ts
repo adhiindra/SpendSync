@@ -107,7 +107,6 @@ export async function getRecentTransactions(limit = 5) {
 
   return prisma.transaction.findMany({
     where: { userId: session.user.id },
-    include: { category: true },
     orderBy: { date: "desc" },
     take: limit,
   })

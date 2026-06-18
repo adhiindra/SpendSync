@@ -49,6 +49,8 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           currency: user.currency,
           language: user.language,
+          ocrMode: user.ocrMode,
+          hasGeminiKey: !!user.geminiApiKey,
         };
       }
     })
@@ -59,12 +61,20 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.currency = user.currency;
         token.language = user.language;
+        token.ocrMode = user.ocrMode;
+        token.hasGeminiKey = user.hasGeminiKey;
       }
       if (trigger === "update" && session?.currency) {
         token.currency = session.currency;
       }
       if (trigger === "update" && session?.language) {
         token.language = session.language;
+      }
+      if (trigger === "update" && session?.ocrMode) {
+        token.ocrMode = session.ocrMode;
+      }
+      if (trigger === "update" && session?.hasGeminiKey !== undefined) {
+        token.hasGeminiKey = session.hasGeminiKey;
       }
       return token;
     },
@@ -73,6 +83,8 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.currency = token.currency as string;
         session.user.language = token.language as string;
+        session.user.ocrMode = token.ocrMode as string;
+        session.user.hasGeminiKey = token.hasGeminiKey as boolean;
       }
       return session;
     }
