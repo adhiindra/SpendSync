@@ -5,7 +5,20 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { startOfMonth, subMonths, endOfMonth } from "date-fns"
 
-export async function getDashboardMetrics() {
+async function getBaseWhereClause(isFamily: boolean = false) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.id) throw new Error("Unauthorized")
+  
+  if (isFamily) {
+    const member = await prisma.familyMember.findFirst({ where: { userId: session.user.id } })
+    if (!member) return { familyId: "NON_EXISTENT_FAMILY" }
+    return { familyId: member.familyId }
+  }
+  return { userId: session.user.id, familyId: null }
+}
+
+export async function getDashboardMetrics(isFamily: boolean = false) {
+  const baseWhere = await getBaseWhereClause(isFamily)
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) throw new Error("Unauthorized")
 
@@ -15,7 +28,7 @@ export async function getDashboardMetrics() {
 
   const transactions = await prisma.transaction.findMany({
     where: {
-      userId: session.user.id,
+      ...baseWhere,
       date: {
         gte: currentMonthStart,
         lte: currentMonthEnd,
@@ -36,18 +49,18 @@ export async function getDashboardMetrics() {
 
   // Optionally calculate total balance (all time net balance)
   const allTimeTx = await prisma.transaction.aggregate({
-    where: { userId: session.user.id },
+    where: { ...baseWhere },
     _sum: {
       amount: true
     }
   })
   // Actually we need to separate INCOME and EXPENSE for all time
   const allTimeIncome = await prisma.transaction.aggregate({
-    where: { userId: session.user.id, type: "INCOME" },
+    where: { ...baseWhere, type: "INCOME" },
     _sum: { amount: true }
   })
   const allTimeExpense = await prisma.transaction.aggregate({
-    where: { userId: session.user.id, type: "EXPENSE" },
+    where: { ...baseWhere, type: "EXPENSE" },
     _sum: { amount: true }
   })
   const totalBalance = (allTimeIncome._sum.amount || 0) - (allTimeExpense._sum.amount || 0)
@@ -59,7 +72,8 @@ export async function getDashboardMetrics() {
   }
 }
 
-export async function getSixMonthCashFlow() {
+export async function getSixMonthCashFlow(isFamily: boolean = false) {
+  const baseWhere = await getBaseWhereClause(isFamily)
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) throw new Error("Unauthorized")
 
@@ -68,7 +82,7 @@ export async function getSixMonthCashFlow() {
 
   const transactions = await prisma.transaction.findMany({
     where: {
-      userId: session.user.id,
+      ...baseWhere,
       date: {
         gte: sixMonthsAgo,
       },
@@ -101,12 +115,13 @@ export async function getSixMonthCashFlow() {
   return Array.from(monthlyData.values())
 }
 
-export async function getRecentTransactions(limit = 5) {
+export async function getRecentTransactions(limit = 5, isFamily: boolean = false) {
+  const baseWhere = await getBaseWhereClause(isFamily)
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) throw new Error("Unauthorized")
 
   return prisma.transaction.findMany({
-    where: { userId: session.user.id },
+    where: { ...baseWhere },
     orderBy: { date: "desc" },
     take: limit,
   })

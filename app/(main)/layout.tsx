@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/header";
 import { OrbBackground } from "@/components/ui/orb-background";
+import { PullToRefresh } from "@/components/ui/pull-to-refresh";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -18,12 +19,12 @@ export default async function DashboardLayout({
     <I18nProvider dictionary={dictionary}>
       <div className="flex min-h-screen bg-background relative overflow-hidden">
         <OrbBackground />
-        <div className="flex-1 h-screen overflow-y-auto flex flex-col min-w-0 z-10 bg-transparent relative">
+        <PullToRefresh>
           <Header />
           <main className="flex-1 px-4 lg:px-14 py-5 relative">
             {children}
           </main>
-        </div>
+        </PullToRefresh>
       </div>
     </I18nProvider>
   );

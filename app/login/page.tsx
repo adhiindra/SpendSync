@@ -10,11 +10,13 @@ import { Button } from "@/components/ui/button";
 import { FlowSyncLogo } from "@/components/ui/flow-sync-logo";
 import { OrbBackground } from "@/components/ui/orb-background";
 import { motion } from "framer-motion";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -57,9 +59,17 @@ export default function LoginPage() {
       </div>
 
       {/* Right Panel - Login Form */}
-      <div className="flex w-full lg:w-1/2 items-center justify-center p-8 md:p-12">
-        <div className="w-full max-w-[400px] space-y-8">
+      <div className="flex w-full lg:w-1/2 items-center justify-center p-8 md:p-12 relative overflow-hidden">
+        <div className="absolute inset-0 z-0 block lg:hidden pointer-events-none opacity-50">
+          <OrbBackground />
+        </div>
+        <div className="w-full max-w-[400px] space-y-8 relative z-10">
           <div className="space-y-2 text-center lg:text-left">
+            <div className="flex lg:hidden justify-center mb-6">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 shadow-sm">
+                <FlowSyncLogo className="h-8 w-8 text-primary" />
+              </div>
+            </div>
             <h1 className="text-3xl font-semibold tracking-tight">Welcome back</h1>
             <p className="text-sm text-muted-foreground">
               Enter your credentials to access your account
@@ -98,14 +108,23 @@ export default function LoginPage() {
                     Forgot password?
                   </Link>
                 </div>
-                <Input 
-                  id="password" 
-                  type="password" 
-                  required 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-11 px-4 transition-all focus:ring-2 focus:ring-primary/20"
-                />
+                <div className="relative">
+                  <Input 
+                    id="password" 
+                    type={showPassword ? "text" : "password"} 
+                    required 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-11 px-4 pr-10 transition-all focus:ring-2 focus:ring-primary/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
             </div>
 

@@ -72,19 +72,19 @@ export function FamilySettingsPanel({ family, currentUserId }: FamilyProps) {
 
         <div className="space-y-4">
           {family.members.map((member: any) => (
-            <div key={member.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-border">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+            <div key={member.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-3 bg-muted/50 rounded-lg border border-border gap-4 sm:gap-0">
+              <div className="flex items-center gap-3 w-full min-w-0">
+                <div className="w-10 h-10 shrink-0 bg-primary/10 rounded-full flex items-center justify-center">
                   <UserCircle className="w-6 h-6 text-primary" />
                 </div>
-                <div>
-                  <p className="font-medium">{member.user.name || "Unknown User"} {member.userId === currentUserId ? "(You)" : ""}</p>
-                  <p className="text-xs text-muted-foreground">{member.user.email}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium truncate">{member.user.name || "Unknown User"} {member.userId === currentUserId ? "(You)" : ""}</p>
+                  <p className="text-xs text-muted-foreground truncate">{member.user.email}</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
-                <div className="flex flex-col items-end gap-1">
+              <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-0 border-border/50">
+                <div className="flex flex-row sm:flex-col items-center sm:items-end gap-3 sm:gap-1">
                   <span className="text-xs font-semibold px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full">
                     {member.role}
                   </span>
