@@ -7,7 +7,7 @@ import "gooey-toast/styles.css";
 export function ToastProvider() {
   useEffect(() => {
     const handle = mountToaster({
-      position: "bottom-right",
+      position: "top-center",
     });
     return () => handle.unmount();
   }, []);

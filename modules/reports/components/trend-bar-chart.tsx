@@ -18,6 +18,8 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart"
 import { MonthlyTrend } from "../types"
+import { useSession } from "next-auth/react"
+import { formatCurrency } from "@/lib/format"
 
 const chartConfig = {
   income: {
@@ -31,6 +33,9 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function TrendBarChart({ data, year }: { data: MonthlyTrend[], year: number }) {
+  const { data: session } = useSession()
+  const userCurrency = session?.user?.currency || "USD"
+
   return (
     <Card>
       <CardHeader>
@@ -51,7 +56,7 @@ export function TrendBarChart({ data, year }: { data: MonthlyTrend[], year: numb
             <YAxis 
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `$${value}`}
+              tickFormatter={(value) => formatCurrency(value, userCurrency, { maximumFractionDigits: 0, minimumFractionDigits: 0 })}
               width={60}
             />
             <ChartTooltip content={<ChartTooltipContent />} />

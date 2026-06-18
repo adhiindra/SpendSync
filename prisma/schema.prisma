@@ -44,6 +44,7 @@ model User {
   emailVerified DateTime?
   password      String?
   image         String?
+  currency      String    @default("USD")
   accounts      Account[]
   sessions      Session[]
   transactions  Transaction[]

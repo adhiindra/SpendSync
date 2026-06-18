@@ -13,6 +13,8 @@ import { Category } from "@prisma/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Wallet, TrendingDown, TrendingUp } from "lucide-react"
+import { useSession } from "next-auth/react"
+import { formatCurrency } from "@/lib/format"
 
 export function ReportDashboard() {
   const [year, setYear] = useState(new Date().getFullYear())
@@ -25,6 +27,9 @@ export function ReportDashboard() {
   const [transactions, setTransactions] = useState<TransactionWithCategory[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [isLoading, setIsLoading] = useState(true)
+
+  const { data: session } = useSession()
+  const userCurrency = session?.user?.currency || "USD"
 
   async function loadData() {
     setIsLoading(true)
@@ -119,7 +124,7 @@ export function ReportDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-emerald-500">
-              ${summary?.totalIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? "0.00"}
+              {formatCurrency(summary?.totalIncome ?? 0, userCurrency)}
             </div>
           </CardContent>
         </Card>
@@ -130,7 +135,7 @@ export function ReportDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-500">
-              ${summary?.totalExpense.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? "0.00"}
+              {formatCurrency(summary?.totalExpense ?? 0, userCurrency)}
             </div>
           </CardContent>
         </Card>
@@ -141,7 +146,7 @@ export function ReportDashboard() {
           </CardHeader>
           <CardContent>
             <div className={`text-2xl font-bold ${(summary?.netBalance ?? 0) >= 0 ? "text-emerald-500" : "text-red-500"}`}>
-              ${summary?.netBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? "0.00"}
+              {formatCurrency(summary?.netBalance ?? 0, userCurrency)}
             </div>
           </CardContent>
         </Card>

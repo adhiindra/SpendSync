@@ -17,6 +17,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { format } from "date-fns"
+import { useSession } from "next-auth/react"
+import { formatCurrency } from "@/lib/format"
 
 export function TransactionList({ 
   transactions, 
@@ -29,6 +31,8 @@ export function TransactionList({
   onChange?: () => void
   hideActions?: boolean
 }) {
+  const { data: session } = useSession()
+  const userCurrency = session?.user?.currency || "USD"
   const [isPending, startTransition] = useTransition()
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
@@ -86,7 +90,7 @@ export function TransactionList({
                 </span>
               </TableCell>
               <TableCell className={`text-right font-medium ${tx.type === 'INCOME' ? 'text-emerald-500' : 'text-slate-900 dark:text-slate-100'}`}>
-                {tx.type === 'INCOME' ? '+' : '-'}${tx.amount.toFixed(2)}
+                {tx.type === 'INCOME' ? '+' : '-'}{formatCurrency(tx.amount, userCurrency)}
               </TableCell>
               {!hideActions && (
                 <TableCell className="text-right">

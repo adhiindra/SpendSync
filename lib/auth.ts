@@ -47,22 +47,28 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name,
+          currency: user.currency,
         };
       }
     })
   ],
   callbacks: {
+    async jwt({ token, user, trigger, session }) {
+      if (user) {
+        token.id = user.id;
+        token.currency = user.currency;
+      }
+      if (trigger === "update" && session?.currency) {
+        token.currency = session.currency;
+      }
+      return token;
+    },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string;
+        session.user.currency = token.currency as string;
       }
       return session;
-    },
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
-      return token;
     }
   }
 };

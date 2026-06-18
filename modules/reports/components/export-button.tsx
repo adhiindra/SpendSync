@@ -7,6 +7,8 @@ import autoTable from "jspdf-autotable"
 import { MonthlySummary } from "../types"
 import { TransactionWithCategory } from "@/modules/transactions/types"
 import { format } from "date-fns"
+import { useSession } from "next-auth/react"
+import { formatCurrency } from "@/lib/format"
 
 export function ExportButton({
   year,
@@ -19,6 +21,9 @@ export function ExportButton({
   summary: MonthlySummary | null
   transactions: TransactionWithCategory[]
 }) {
+  const { data: session } = useSession()
+  const userCurrency = session?.user?.currency || "USD"
+
   const exportToPDF = () => {
     const doc = new jsPDF()
     const monthName = format(new Date(year, month - 1, 1), "MMMM")
@@ -44,11 +49,11 @@ export function ExportButton({
       doc.setFontSize(10)
       doc.setTextColor(80, 80, 80)
       
-      const formatCurrency = (val: number) => `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      const formatCurr = (val: number) => formatCurrency(val, userCurrency)
       
-      doc.text(`Total Income: ${formatCurrency(summary.totalIncome)}`, 14, 56)
-      doc.text(`Total Expense: ${formatCurrency(summary.totalExpense)}`, 14, 62)
-      doc.text(`Net Balance: ${formatCurrency(summary.netBalance)}`, 14, 68)
+      doc.text(`Total Income: ${formatCurr(summary.totalIncome)}`, 14, 56)
+      doc.text(`Total Expense: ${formatCurr(summary.totalExpense)}`, 14, 62)
+      doc.text(`Net Balance: ${formatCurr(summary.netBalance)}`, 14, 68)
     }
 
     // Transactions Table
@@ -58,7 +63,7 @@ export function ExportButton({
         tx.description || "-",
         tx.category.name,
         tx.type === "INCOME" ? "Income" : "Expense",
-        (tx.type === "INCOME" ? "+" : "-") + `$${tx.amount.toFixed(2)}`
+        (tx.type === "INCOME" ? "+" : "-") + formatCurrency(tx.amount, userCurrency)
       ])
 
       autoTable(doc, {

@@ -16,8 +16,13 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { CategoryBreakdown } from "../types"
+import { useSession } from "next-auth/react"
+import { formatCurrency } from "@/lib/format"
 
 export function CategoryPieChart({ data, type }: { data: CategoryBreakdown[], type: "INCOME" | "EXPENSE" }) {
+  const { data: session } = useSession()
+  const userCurrency = session?.user?.currency || "USD"
+
   const chartData = React.useMemo(() => {
     return data.map((item, index) => ({
       category: item.category.name,
@@ -97,7 +102,7 @@ export function CategoryPieChart({ data, type }: { data: CategoryBreakdown[], ty
                           y={viewBox.cy}
                           className="fill-foreground text-3xl font-bold"
                         >
-                          ${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          {formatCurrency(totalAmount, userCurrency)}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
