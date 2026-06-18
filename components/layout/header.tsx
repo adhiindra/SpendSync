@@ -8,6 +8,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SpendSyncLogo } from "@/components/ui/spend-sync-logo";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import clsx from "clsx";
 
@@ -65,12 +66,12 @@ export function Header() {
             </nav>
           </SheetContent>
         </Sheet>
-        
+
         <Link href="/dashboard" className="hidden md:flex items-center gap-2 font-bold tracking-tight text-xl mr-2">
           <SpendSyncLogo className="h-6 w-6 text-primary" />
           <span className="hidden sm:inline-block">SpendSync</span>
         </Link>
-        
+
         <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
@@ -120,19 +121,45 @@ export function Header() {
             <span className="text-sm font-medium leading-none">{session?.user?.name || "User"}</span>
             <span className="text-xs text-muted-foreground mt-1">{session?.user?.email}</span>
           </div>
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-secondary-foreground border">
-            <UserIcon className="h-4 w-4" />
-          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger render={<button className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-secondary-foreground border focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />}>
+              <UserIcon className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 md:hidden">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{session?.user?.name || "User"}</p>
+                    <p className="text-xs leading-none text-muted-foreground">{session?.user?.email}</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem render={<Link href="/settings" className="w-full cursor-pointer" />}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => signOut({ callbackUrl: '/login' })}
+                  className="text-destructive focus:text-destructive cursor-pointer"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <Link
             href="/settings"
-            className="p-2 text-muted-foreground hover:text-foreground transition-colors ml-1"
+            className="hidden md:flex p-2 text-muted-foreground hover:text-foreground transition-colors ml-1"
             title="Settings"
           >
             <Settings className="h-4 w-4" />
           </Link>
           <button
             onClick={() => signOut({ callbackUrl: '/login' })}
-            className="p-2 text-muted-foreground hover:text-destructive transition-colors"
+            className="hidden md:flex p-2 text-muted-foreground hover:text-destructive transition-colors"
             title="Sign out"
           >
             <LogOut className="h-4 w-4" />
