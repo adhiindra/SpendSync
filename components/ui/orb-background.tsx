@@ -1,10 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
-export function OrbBackground() {
+export function OrbBackground({ className }: { className?: string }) {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+    <div className={cn("absolute inset-0 overflow-hidden pointer-events-none z-0", className)}>
       {/* Main gradient orb */}
       <motion.div
         initial={{ opacity: 0, scale: 0.6 }}
