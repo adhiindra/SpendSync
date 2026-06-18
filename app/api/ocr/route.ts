@@ -49,12 +49,13 @@ The user's base currency is ${userCurrency}.
 Return ONLY a JSON object with these fields (omit any field you cannot determine):
 {
   "amount": "decimal number as string, e.g. 45.50 or 50000. Auto-detect the currency (IDR, USD, etc.) to correctly parse thousand separators and decimals. Return ONLY the final mathematical number.",
-  "date": "DD-MM-YYYY or DD-MM-YY",
-  "description": "merchant name and brief description, max 60 chars",
+  "date": "YYYY-MM-DD",
+  "description": "merchant name followed by a summary of purchased items (e.g., 'Walmart: Apples, Oranges, Milk'), max 120 chars",
   "type": "EXPENSE or INCOME",
   "category": "Choose exactly one of the following based on type. For EXPENSE: Transport, Food, Shopping, Health, Household, Entertainment, Travel, Other. For INCOME: Salary, Investment, Gift, Other_Income",
 }
 Rules:
+- date: MUST be strictly converted to YYYY-MM-DD format (e.g., 2024-10-25) regardless of how it is written on the receipt.
 - amount: the final total paid, without currency symbol. The user's base currency is ${userCurrency}. If it's IDR (e.g. Rp 50.000), return 50000. If it's USD (e.g. $45.50), return 45.50. Be very careful with thousand separators vs decimals based on the detected currency.
 - type: almost always EXPENSE for receipts; use INCOME only for salary slips/payment received
 - If a field cannot be determined, omit it entirely
