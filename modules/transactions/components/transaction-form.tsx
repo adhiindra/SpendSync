@@ -28,12 +28,14 @@ export function TransactionForm({
   initialData,
   defaultType = "EXPENSE",
   prefillData,
-  onSuccess
+  onSuccess,
+  isFamily = false
 }: {
   initialData?: Transaction
   defaultType?: "INCOME" | "EXPENSE"
   prefillData?: OcrExtractedData
   onSuccess?: () => void
+  isFamily?: boolean
 }) {
   const [isLoading, setIsLoading] = useState(false)
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
@@ -74,7 +76,7 @@ export function TransactionForm({
           category: data.category,
           date: new Date(data.date),
           description: data.description,
-        })
+        }, isFamily)
         toast.success({ title: "Transaction updated!" })
       } else {
         await createTransaction({
@@ -83,7 +85,7 @@ export function TransactionForm({
           category: data.category,
           date: new Date(data.date),
           description: data.description,
-        })
+        }, isFamily)
         toast.success({ title: "Transaction added successfully!" })
       }
       if (onSuccess) onSuccess()

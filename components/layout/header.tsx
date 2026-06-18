@@ -11,6 +11,8 @@ import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/co
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/components/providers/i18n-provider";
+import { getPendingInvitations, acceptInvitation, declineInvitation } from "@/modules/family/actions";
+import { toast } from "gooey-toast";
 import clsx from "clsx";
 
 export function Header() {
@@ -26,12 +28,33 @@ export function Header() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
+  const [invitations, setInvitations] = useState<any[]>([]);
   const pathname = usePathname();
 
   // Avoid hydration mismatch by waiting for mount
   useEffect(() => {
     setMounted(true);
+    getPendingInvitations().then(setInvitations).catch(console.error);
   }, []);
+
+  const handleAccept = async (id: string) => {
+    try {
+      await acceptInvitation(id);
+      setInvitations(prev => prev.filter(inv => inv.id !== id));
+      toast.success({ title: "Welcome to the family!" });
+    } catch (e: any) {
+      toast.error({ title: e.message || "Failed to accept" });
+    }
+  };
+
+  const handleDecline = async (id: string) => {
+    try {
+      await declineInvitation(id);
+      setInvitations(prev => prev.filter(inv => inv.id !== id));
+    } catch (e: any) {
+      toast.error({ title: e.message || "Failed to decline" });
+    }
+  };
 
   return (
     <header className="sticky top-4 z-30 mx-4 lg:mx-8 mt-4 flex h-16 shrink-0 items-center justify-between gap-4 rounded-2xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-black/20 px-6 backdrop-blur-[32px] shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] transition-colors">
@@ -112,10 +135,35 @@ export function Header() {
             {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </button>
         )}
-        <button className="relative p-2 text-muted-foreground hover:text-foreground transition-colors">
-          <Bell className="h-5 w-5" />
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary" />
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="relative p-2 text-muted-foreground hover:text-foreground transition-colors outline-none">
+            <Bell className="h-5 w-5" />
+            {invitations.length > 0 && (
+              <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-destructive border-2 border-background" />
+            )}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-80">
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            {invitations.length === 0 ? (
+              <div className="p-4 text-center text-sm text-muted-foreground">
+                No new notifications
+              </div>
+            ) : (
+              invitations.map(inv => (
+                <div key={inv.id} className="p-3 text-sm flex flex-col gap-2">
+                  <p>You have been invited to join <strong>{inv.family.name}</strong></p>
+                  <div className="flex gap-2">
+                    <Button size="sm" className="w-full" onClick={() => handleAccept(inv.id)}>Accept</Button>
+                    <Button size="sm" variant="outline" className="w-full" onClick={() => handleDecline(inv.id)}>Decline</Button>
+                  </div>
+                </div>
+              ))
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
         <div className="h-8 w-px bg-border mx-1 hidden sm:block" />
 
         <div className="flex items-center gap-2">

@@ -51,6 +51,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   transactions  Transaction[]
+  familyMembers FamilyMember[]
 }
 
 model VerificationToken {
@@ -71,6 +72,46 @@ model Transaction {
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  familyId    String?
 
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  family   Family?  @relation(fields: [familyId], references: [id], onDelete: Cascade)
+}
+
+model Family {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  members      FamilyMember[]
+  transactions Transaction[]
+  invitations  FamilyInvitation[]
+}
+
+model FamilyMember {
+  id       String   @id @default(cuid())
+  familyId String
+  userId   String
+  role     String   // "ORGANIZER" | "MEMBER"
+  access   String   // "VIEW_ONLY" | "VIEW_EDIT"
+  joinedAt DateTime @default(now())
+
+  family   Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([familyId, userId])
+}
+
+model FamilyInvitation {
+  id        String   @id @default(cuid())
+  familyId  String
+  email     String
+  token     String   @unique @default(cuid())
+  role      String   @default("MEMBER")
+  access    String   @default("VIEW_ONLY")
+  status    String   @default("PENDING") // PENDING, ACCEPTED, DECLINED
+  createdAt DateTime @default(now())
+
+  family    Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
 }

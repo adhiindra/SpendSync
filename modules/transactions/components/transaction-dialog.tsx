@@ -23,12 +23,14 @@ export function TransactionDialog({
   transaction,
   defaultType,
   trigger,
-  onSuccess
+  onSuccess,
+  isFamily = false
 }: { 
   transaction?: Transaction
   defaultType?: "INCOME" | "EXPENSE"
   trigger?: React.ReactElement
   onSuccess?: () => void
+  isFamily?: boolean
 }) {
   const { data: session } = useSession()
   const ocrMode = (session?.user?.ocrMode as "local" | "ai") || "local"
@@ -106,6 +108,7 @@ export function TransactionDialog({
             initialData={transaction}
             defaultType={defaultType}
             prefillData={prefillData}
+            isFamily={isFamily}
             onSuccess={() => {
               handleOpenChange(false)
               onSuccess?.()

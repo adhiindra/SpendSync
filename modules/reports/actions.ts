@@ -7,16 +7,26 @@ import { CategoryBreakdown, MonthlySummary, MonthlyTrend } from "./types"
 import { Transaction } from "@prisma/client"
 import { CATEGORIES } from "@/lib/categories"
 
-export async function getMonthlyTransactions(year: number, month: number): Promise<Transaction[]> {
+async function getBaseWhereClause(isFamily: boolean = false) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) throw new Error("Unauthorized")
+  
+  if (isFamily) {
+    const member = await prisma.familyMember.findFirst({ where: { userId: session.user.id } })
+    if (!member) return { familyId: "NON_EXISTENT_FAMILY" }
+    return { familyId: member.familyId }
+  }
+  return { userId: session.user.id, familyId: null }
+}
 
+export async function getMonthlyTransactions(year: number, month: number, isFamily: boolean = false): Promise<Transaction[]> {
+  const baseWhere = await getBaseWhereClause(isFamily)
   const startDate = new Date(year, month - 1, 1)
   const endDate = new Date(year, month, 1)
 
   return await prisma.transaction.findMany({
     where: {
-      userId: session.user.id,
+      ...baseWhere,
       date: {
         gte: startDate,
         lt: endDate,
@@ -26,16 +36,14 @@ export async function getMonthlyTransactions(year: number, month: number): Promi
   })
 }
 
-export async function getMonthlySummary(year: number, month: number): Promise<MonthlySummary> {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.id) throw new Error("Unauthorized")
-
+export async function getMonthlySummary(year: number, month: number, isFamily: boolean = false): Promise<MonthlySummary> {
+  const baseWhere = await getBaseWhereClause(isFamily)
   const startDate = new Date(year, month - 1, 1)
   const endDate = new Date(year, month, 1)
 
   const transactions = await prisma.transaction.findMany({
     where: {
-      userId: session.user.id,
+      ...baseWhere,
       date: {
         gte: startDate,
         lt: endDate,
@@ -61,16 +69,14 @@ export async function getMonthlySummary(year: number, month: number): Promise<Mo
   }
 }
 
-export async function getCategoryBreakdown(year: number, month: number, type: "INCOME" | "EXPENSE"): Promise<CategoryBreakdown[]> {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.id) throw new Error("Unauthorized")
-
+export async function getCategoryBreakdown(year: number, month: number, type: "INCOME" | "EXPENSE", isFamily: boolean = false): Promise<CategoryBreakdown[]> {
+  const baseWhere = await getBaseWhereClause(isFamily)
   const startDate = new Date(year, month - 1, 1)
   const endDate = new Date(year, month, 1)
 
   const transactions = await prisma.transaction.findMany({
     where: {
-      userId: session.user.id,
+      ...baseWhere,
       type,
       date: {
         gte: startDate,
@@ -97,16 +103,14 @@ export async function getCategoryBreakdown(year: number, month: number, type: "I
   return Array.from(breakdownMap.values()).sort((a, b) => b.totalAmount - a.totalAmount)
 }
 
-export async function getMonthlyTrends(year: number): Promise<MonthlyTrend[]> {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.id) throw new Error("Unauthorized")
-
+export async function getMonthlyTrends(year: number, isFamily: boolean = false): Promise<MonthlyTrend[]> {
+  const baseWhere = await getBaseWhereClause(isFamily)
   const startDate = new Date(year, 0, 1) // Jan 1st
   const endDate = new Date(year + 1, 0, 1) // Jan 1st next year
 
   const transactions = await prisma.transaction.findMany({
     where: {
-      userId: session.user.id,
+      ...baseWhere,
       date: {
         gte: startDate,
         lt: endDate,

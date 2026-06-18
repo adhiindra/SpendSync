@@ -23,11 +23,15 @@ import { formatCurrency } from "@/lib/format"
 export function TransactionList({ 
   transactions, 
   onChange,
-  hideActions = false
+  hideActions = false,
+  isFamily = false,
+  memberAccess = "VIEW_EDIT"
 }: { 
-  transactions: Transaction[]
+  transactions: any[]
   onChange?: () => void
   hideActions?: boolean
+  isFamily?: boolean
+  memberAccess?: "VIEW_ONLY" | "VIEW_EDIT"
 }) {
   const { data: session } = useSession()
   const userCurrency = session?.user?.currency || "USD"
@@ -39,7 +43,7 @@ export function TransactionList({
       setDeletingId(id)
       startTransition(async () => {
         try {
-          await deleteTransaction(id)
+          await deleteTransaction(id, isFamily)
           toast.success({ title: "Transaction deleted" })
           onChange?.()
         } catch (e) {
@@ -78,7 +82,14 @@ export function TransactionList({
               const category = CATEGORIES.find(c => c.id === tx.category)
               return (
               <TableRow key={tx.id}>
-                <TableCell className="whitespace-nowrap">{format(new Date(tx.date), "MMM d, yyyy")}</TableCell>
+                <TableCell className="whitespace-nowrap">
+                  <div className="flex flex-col">
+                    <span>{format(new Date(tx.date), "MMM d, yyyy")}</span>
+                    {isFamily && tx.user && (
+                      <span className="text-[10px] text-muted-foreground mt-0.5">Added by {tx.user.name || tx.user.email}</span>
+                    )}
+                  </div>
+                </TableCell>
                 <TableCell>{tx.description || "-"}</TableCell>
                 <TableCell>
                   <span
@@ -94,11 +105,12 @@ export function TransactionList({
                 <TableCell className={`text-right font-medium ${tx.type === 'INCOME' ? 'text-emerald-500' : 'text-slate-900 dark:text-slate-100'}`}>
                   {tx.type === 'INCOME' ? '+' : '-'}{formatCurrency(tx.amount, userCurrency)}
                 </TableCell>
-                {!hideActions && (
+                {!hideActions && memberAccess !== "VIEW_ONLY" && (
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <TransactionDialog 
                         transaction={tx}
+                        isFamily={isFamily}
                         trigger={
                           <Button variant="ghost" size="icon-sm" className="h-8 w-8 text-muted-foreground hover:text-foreground">
                             <Edit className="h-4 w-4" />
@@ -136,7 +148,10 @@ export function TransactionList({
             <div className="flex justify-between items-start gap-4">
               <div className="flex flex-col min-w-0">
                 <span className="font-medium text-sm truncate">{tx.description || category?.name || tx.category}</span>
-                <span className="text-xs text-muted-foreground mt-0.5">{format(new Date(tx.date), "MMM d, yyyy")}</span>
+                <span className="text-xs text-muted-foreground mt-0.5">
+                  {format(new Date(tx.date), "MMM d, yyyy")}
+                  {isFamily && tx.user && ` • ${tx.user.name || tx.user.email}`}
+                </span>
               </div>
               <div className={`text-right font-medium text-sm whitespace-nowrap ${tx.type === 'INCOME' ? 'text-emerald-500' : 'text-slate-900 dark:text-slate-100'}`}>
                 {tx.type === 'INCOME' ? '+' : '-'}{formatCurrency(tx.amount, userCurrency)}
@@ -152,10 +167,11 @@ export function TransactionList({
               >
                 {category?.name || tx.category}
               </span>
-              {!hideActions && (
+              {!hideActions && memberAccess !== "VIEW_ONLY" && (
                 <div className="flex justify-end gap-1">
                   <TransactionDialog 
                     transaction={tx}
+                    isFamily={isFamily}
                     trigger={
                       <Button variant="ghost" size="icon-sm" className="h-7 w-7 text-muted-foreground hover:text-foreground">
                         <Edit className="h-3.5 w-3.5" />

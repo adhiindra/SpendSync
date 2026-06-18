@@ -14,7 +14,7 @@ import { Wallet, TrendingDown, TrendingUp } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { formatCurrency } from "@/lib/format"
 
-export function ReportDashboard() {
+export function ReportDashboard({ isFamily = false }: { isFamily?: boolean }) {
   const [year, setYear] = useState(new Date().getFullYear())
   const [month, setMonth] = useState(new Date().getMonth() + 1)
 
@@ -32,11 +32,11 @@ export function ReportDashboard() {
     setIsLoading(true)
     try {
       const [sum, expenses, incomes, trnds, txs] = await Promise.all([
-        getMonthlySummary(year, month),
-        getCategoryBreakdown(year, month, "EXPENSE"),
-        getCategoryBreakdown(year, month, "INCOME"),
-        getMonthlyTrends(year),
-        getMonthlyTransactions(year, month)
+        getMonthlySummary(year, month, isFamily),
+        getCategoryBreakdown(year, month, "EXPENSE", isFamily),
+        getCategoryBreakdown(year, month, "INCOME", isFamily),
+        getMonthlyTrends(year, isFamily),
+        getMonthlyTransactions(year, month, isFamily)
       ])
       setSummary(sum)
       setExpenseBreakdown(expenses)
@@ -159,7 +159,7 @@ export function ReportDashboard() {
 
       <div className="mt-8 space-y-4">
         <h2 className="text-xl font-semibold tracking-tight">Transaction History</h2>
-        <TransactionList transactions={transactions} hideActions />
+        <TransactionList transactions={transactions} hideActions isFamily={isFamily} />
       </div>
     </div>
   )
