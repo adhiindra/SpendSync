@@ -20,10 +20,14 @@ import { format } from "date-fns"
 
 export function TransactionList({ 
   transactions, 
-  categories 
+  categories,
+  onChange,
+  hideActions = false
 }: { 
   transactions: TransactionWithCategory[]
   categories: Category[]
+  onChange?: () => void
+  hideActions?: boolean
 }) {
   const [isPending, startTransition] = useTransition()
   const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -35,6 +39,7 @@ export function TransactionList({
         try {
           await deleteTransaction(id)
           toast.success({ title: "Transaction deleted" })
+          onChange?.()
         } catch (e) {
           console.error(e)
           toast.error({ title: "Failed to delete transaction" })
@@ -46,14 +51,14 @@ export function TransactionList({
   }
   if (transactions.length === 0) {
     return (
-      <div className="text-center py-10 text-muted-foreground border rounded-md">
+      <div className="text-center py-10 text-muted-foreground rounded-xl bg-card/40 backdrop-blur-md shadow-lg border border-white/30 dark:border-white/10 ring-1 ring-foreground/5">
         No transactions found. Add one to get started!
       </div>
     )
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-xl bg-card/40 backdrop-blur-md shadow-lg border border-white/30 dark:border-white/10 ring-1 ring-foreground/5 overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
@@ -61,7 +66,7 @@ export function TransactionList({
             <TableHead>Description</TableHead>
             <TableHead>Category</TableHead>
             <TableHead className="text-right">Amount</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            {!hideActions && <TableHead className="text-right">Actions</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -83,30 +88,33 @@ export function TransactionList({
               <TableCell className={`text-right font-medium ${tx.type === 'INCOME' ? 'text-emerald-500' : 'text-slate-900 dark:text-slate-100'}`}>
                 {tx.type === 'INCOME' ? '+' : '-'}${tx.amount.toFixed(2)}
               </TableCell>
-              <TableCell className="text-right">
-                <div className="flex justify-end gap-2">
-                  <TransactionDialog 
-                    categories={categories} 
-                    transaction={tx}
-                    trigger={
-                      <Button variant="ghost" size="icon-sm" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                        <Edit className="h-4 w-4" />
-                        <span className="sr-only">Edit</span>
-                      </Button>
-                    }
-                  />
-                  <Button 
-                    variant="ghost" 
-                    size="icon-sm" 
-                    className="h-8 w-8 text-muted-foreground hover:text-red-500"
-                    onClick={() => handleDelete(tx.id)}
-                    disabled={isPending && deletingId === tx.id}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Delete</span>
-                  </Button>
-                </div>
-              </TableCell>
+              {!hideActions && (
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-2">
+                    <TransactionDialog 
+                      categories={categories} 
+                      transaction={tx}
+                      trigger={
+                        <Button variant="ghost" size="icon-sm" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                          <Edit className="h-4 w-4" />
+                          <span className="sr-only">Edit</span>
+                        </Button>
+                      }
+                      onSuccess={onChange}
+                    />
+                    <Button 
+                      variant="ghost" 
+                      size="icon-sm" 
+                      className="h-8 w-8 text-muted-foreground hover:text-red-500"
+                      onClick={() => handleDelete(tx.id)}
+                      disabled={isPending && deletingId === tx.id}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Delete</span>
+                    </Button>
+                  </div>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>

@@ -17,11 +17,13 @@ import * as React from "react"
 export function TransactionDialog({ 
   categories, 
   transaction,
-  trigger
+  trigger,
+  onSuccess
 }: { 
   categories: Category[]
   transaction?: TransactionWithCategory
   trigger?: React.ReactElement
+  onSuccess?: () => void
 }) {
   const [open, setOpen] = useState(false)
   const isEditing = !!transaction
@@ -36,7 +38,10 @@ export function TransactionDialog({
         <TransactionForm 
           categories={categories} 
           initialData={transaction}
-          onSuccess={() => setOpen(false)} 
+          onSuccess={() => {
+            setOpen(false)
+            onSuccess?.()
+          }} 
         />
       </DialogContent>
     </Dialog>

@@ -33,7 +33,6 @@ export function TransactionForm({
   onSuccess?: () => void
 }) {
   const [isLoading, setIsLoading] = useState(false)
-  console.log(categories)
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData ? {
@@ -87,7 +86,7 @@ export function TransactionForm({
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="type">Type</Label>
-          <Select 
+          <Select
             value={selectedType}
             onValueChange={(value: string | null) => { if (value) setValue("type", value as "INCOME" | "EXPENSE") }}
           >
@@ -109,7 +108,7 @@ export function TransactionForm({
 
       <div className="space-y-2">
         <Label htmlFor="categoryId">Category</Label>
-        <Select 
+        <Select
           value={watch("categoryId")}
           onValueChange={(value: string | null) => { if (value) setValue("categoryId", value) }}
         >
