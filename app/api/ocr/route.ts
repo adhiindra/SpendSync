@@ -49,7 +49,7 @@ The user's base currency is ${userCurrency}.
 Return ONLY a JSON object with these fields (omit any field you cannot determine):
 {
   "amount": "decimal number as string, e.g. 45.50 or 50000. Auto-detect the currency (IDR, USD, etc.) to correctly parse thousand separators and decimals. Return ONLY the final mathematical number.",
-  "date": "YYYY-MM-DD format",
+  "date": "DD-MM-YYYY or DD-MM-YY",
   "description": "merchant name and brief description, max 60 chars",
   "type": "EXPENSE or INCOME",
   "category": "Choose exactly one of the following based on type. For EXPENSE: Transport, Food, Shopping, Health, Household, Entertainment, Travel, Other. For INCOME: Salary, Investment, Gift, Other_Income",
