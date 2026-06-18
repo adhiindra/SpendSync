@@ -102,6 +102,7 @@ export function OcrUpload({ onExtracted, ocrMode = "local" }: OcrUploadProps) {
   const [status, setStatus] = useState<"idle" | "processing" | "done" | "error">("idle")
   const [progress, setProgress] = useState(0)
   const [errorMsg, setErrorMsg] = useState("")
+  const [ocrLang, setOcrLang] = useState("eng")
 
   const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -129,7 +130,7 @@ export function OcrUpload({ onExtracted, ocrMode = "local" }: OcrUploadProps) {
         setProgress(100)
       } else {
         // Local Tesseract
-        const worker = await createWorker("eng", 1, {
+        const worker = await createWorker(ocrLang, 1, {
           workerPath: "/tessworker.js",
           logger: (m) => {
             if (m.status === "recognizing text") {
@@ -192,8 +193,18 @@ export function OcrUpload({ onExtracted, ocrMode = "local" }: OcrUploadProps) {
         onChange={handleChange}
       />
 
-      {/* Mode badge */}
-      <div className="flex items-center justify-end">
+      {/* Mode badge & Lang */}
+      <div className="flex items-center justify-end gap-2">
+        {ocrMode === "local" && (
+          <select 
+            value={ocrLang}
+            onChange={(e) => setOcrLang(e.target.value)}
+            className="text-xs border border-input rounded-md px-2 py-1 bg-background text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+          >
+            <option value="eng">ENG</option>
+            <option value="ind">IND</option>
+          </select>
+        )}
         <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded-full">
           <ModeIcon className="w-3 h-3" />
           {modeLabel}
