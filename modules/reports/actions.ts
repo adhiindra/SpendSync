@@ -19,21 +19,38 @@ async function getBaseWhereClause(isFamily: boolean = false) {
   return { userId: session.user.id, familyId: null }
 }
 
-export async function getMonthlyTransactions(year: number, month: number, isFamily: boolean = false): Promise<Transaction[]> {
+export async function getMonthlyTransactions(year: number, month: number, isFamily: boolean = false, page: number = 1, pageSize: number = 10) {
   const baseWhere = await getBaseWhereClause(isFamily)
   const startDate = new Date(year, month - 1, 1)
   const endDate = new Date(year, month, 1)
 
-  return await prisma.transaction.findMany({
-    where: {
-      ...baseWhere,
-      date: {
-        gte: startDate,
-        lt: endDate,
+  const skip = (page - 1) * pageSize
+
+  const [transactions, total] = await Promise.all([
+    prisma.transaction.findMany({
+      where: {
+        ...baseWhere,
+        date: {
+          gte: startDate,
+          lt: endDate,
+        },
       },
-    },
-    orderBy: { date: "desc" },
-  })
+      orderBy: { date: "desc" },
+      skip,
+      take: pageSize,
+    }),
+    prisma.transaction.count({
+      where: {
+        ...baseWhere,
+        date: {
+          gte: startDate,
+          lt: endDate,
+        },
+      }
+    })
+  ])
+
+  return { transactions, totalPages: Math.ceil(total / pageSize) }
 }
 
 export async function getMonthlySummary(year: number, month: number, isFamily: boolean = false): Promise<MonthlySummary> {

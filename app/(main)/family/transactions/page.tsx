@@ -6,7 +6,11 @@ import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 
-export default async function FamilyTransactionsPage() {
+export default async function FamilyTransactionsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const session = await getServerSession(authOptions)
   const family = await getFamilyDetails()
 
@@ -14,7 +18,10 @@ export default async function FamilyTransactionsPage() {
     redirect("/family/settings")
   }
 
-  const transactions = await getTransactions(true)
+  const params = await searchParams
+  const pageStr = params.page
+  const page = typeof pageStr === "string" ? parseInt(pageStr, 10) : 1
+  const { transactions, totalPages } = await getTransactions(true, page)
   const currentUserMember = family.members.find((m: any) => m.userId === session?.user?.id)
 
   return (
@@ -33,6 +40,8 @@ export default async function FamilyTransactionsPage() {
         transactions={transactions} 
         isFamily={true} 
         memberAccess={currentUserMember?.access as any} 
+        currentPage={page}
+        totalPages={totalPages}
       />
     </div>
   )

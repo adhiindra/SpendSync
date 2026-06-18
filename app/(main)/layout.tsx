@@ -1,4 +1,5 @@
 import { Header } from "@/components/layout/header";
+import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { OrbBackground } from "@/components/ui/orb-background";
 import { PullToRefresh } from "@/components/ui/pull-to-refresh";
 import { getServerSession } from "next-auth";
@@ -21,9 +22,10 @@ export default async function DashboardLayout({
         <OrbBackground />
         <PullToRefresh>
           <Header />
-          <main className="flex-1 px-4 lg:px-14 py-5 relative">
+          <main className="flex-1 px-4 lg:px-14 py-5 pb-28 relative">
             {children}
           </main>
+          <MobileBottomNav />
         </PullToRefresh>
       </div>
     </I18nProvider>

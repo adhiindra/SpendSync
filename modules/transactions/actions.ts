@@ -6,24 +6,40 @@ import { authOptions } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
 import { CreateTransactionInput, UpdateTransactionInput } from "./types"
 
-export async function getTransactions(isFamily: boolean = false) {
+export async function getTransactions(isFamily: boolean = false, page: number = 1, pageSize: number = 10) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) throw new Error("Unauthorized")
 
+  const skip = (page - 1) * pageSize
+
   if (isFamily) {
     const member = await prisma.familyMember.findFirst({ where: { userId: session.user.id } })
-    if (!member) return []
-    return await prisma.transaction.findMany({
-      where: { familyId: member.familyId },
-      orderBy: { date: "desc" },
-      include: { user: { select: { id: true, name: true, image: true, email: true } } }
-    })
+    if (!member) return { transactions: [], totalPages: 0 }
+    
+    const [transactions, total] = await Promise.all([
+      prisma.transaction.findMany({
+        where: { familyId: member.familyId },
+        orderBy: { date: "desc" },
+        include: { user: { select: { id: true, name: true, image: true, email: true } } },
+        skip,
+        take: pageSize,
+      }),
+      prisma.transaction.count({ where: { familyId: member.familyId } })
+    ])
+    return { transactions, totalPages: Math.ceil(total / pageSize) }
   }
 
-  return await prisma.transaction.findMany({
-    where: { userId: session.user.id, familyId: null },
-    orderBy: { date: "desc" },
-  })
+  const [transactions, total] = await Promise.all([
+    prisma.transaction.findMany({
+      where: { userId: session.user.id, familyId: null },
+      orderBy: { date: "desc" },
+      skip,
+      take: pageSize,
+    }),
+    prisma.transaction.count({ where: { userId: session.user.id, familyId: null } })
+  ])
+  
+  return { transactions, totalPages: Math.ceil(total / pageSize) }
 }
 
 export async function createTransaction(data: CreateTransactionInput, isFamily: boolean = false) {

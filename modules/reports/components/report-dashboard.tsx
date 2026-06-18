@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { getMonthlySummary, getCategoryBreakdown, getMonthlyTrends, getMonthlyTransactions } from "../actions"
 import { MonthlySummary, CategoryBreakdown, MonthlyTrend } from "../types"
 import { CategoryPieChart } from "./category-pie-chart"
@@ -23,7 +24,11 @@ export function ReportDashboard({ isFamily = false }: { isFamily?: boolean }) {
   const [incomeBreakdown, setIncomeBreakdown] = useState<CategoryBreakdown[]>([])
   const [trends, setTrends] = useState<MonthlyTrend[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [totalPages, setTotalPages] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
+
+  const searchParams = useSearchParams()
+  const page = Number(searchParams.get("page")) || 1
 
   const { data: session } = useSession()
   const userCurrency = session?.user?.currency || "USD"
@@ -31,18 +36,19 @@ export function ReportDashboard({ isFamily = false }: { isFamily?: boolean }) {
   async function loadData() {
     setIsLoading(true)
     try {
-      const [sum, expenses, incomes, trnds, txs] = await Promise.all([
+      const [sum, expenses, incomes, trnds, txsData] = await Promise.all([
         getMonthlySummary(year, month, isFamily),
         getCategoryBreakdown(year, month, "EXPENSE", isFamily),
         getCategoryBreakdown(year, month, "INCOME", isFamily),
         getMonthlyTrends(year, isFamily),
-        getMonthlyTransactions(year, month, isFamily)
+        getMonthlyTransactions(year, month, isFamily, page)
       ])
       setSummary(sum)
       setExpenseBreakdown(expenses)
       setIncomeBreakdown(incomes)
       setTrends(trnds)
-      setTransactions(txs)
+      setTransactions(txsData.transactions)
+      setTotalPages(txsData.totalPages)
     } catch (error) {
       console.error("Failed to load reports data", error)
     } finally {
@@ -52,7 +58,7 @@ export function ReportDashboard({ isFamily = false }: { isFamily?: boolean }) {
 
   useEffect(() => {
     loadData()
-  }, [year, month])
+  }, [year, month, page])
 
   const months = [
     { value: 1, label: "January" },
@@ -159,7 +165,13 @@ export function ReportDashboard({ isFamily = false }: { isFamily?: boolean }) {
 
       <div className="mt-8 space-y-4">
         <h2 className="text-xl font-semibold tracking-tight">Transaction History</h2>
-        <TransactionList transactions={transactions} hideActions isFamily={isFamily} />
+        <TransactionList 
+          transactions={transactions} 
+          hideActions 
+          isFamily={isFamily} 
+          currentPage={page}
+          totalPages={totalPages}
+        />
       </div>
     </div>
   )

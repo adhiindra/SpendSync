@@ -19,19 +19,24 @@ import {
 import { format } from "date-fns"
 import { useSession } from "next-auth/react"
 import { formatCurrency } from "@/lib/format"
+import { PaginationControls } from "@/components/ui/pagination-controls"
 
 export function TransactionList({ 
   transactions, 
   onChange,
   hideActions = false,
   isFamily = false,
-  memberAccess = "VIEW_EDIT"
+  memberAccess = "VIEW_EDIT",
+  totalPages,
+  currentPage,
 }: { 
   transactions: any[]
   onChange?: () => void
   hideActions?: boolean
   isFamily?: boolean
   memberAccess?: "VIEW_ONLY" | "VIEW_EDIT"
+  totalPages?: number
+  currentPage?: number
 }) {
   const { data: session } = useSession()
   const userCurrency = session?.user?.currency || "USD"
@@ -197,6 +202,12 @@ export function TransactionList({
           )
         })}
       </div>
+
+      {totalPages !== undefined && (
+        <div className="border-t border-border/50 bg-muted/20">
+          <PaginationControls totalPages={totalPages} />
+        </div>
+      )}
     </div>
   )
 }

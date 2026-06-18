@@ -42,12 +42,11 @@ export function DashboardClient({
       { title: "Total Balance", value: data.metrics.totalBalance, icon: Wallet, positive: data.metrics.totalBalance >= 0 },
       { title: "Monthly Income", value: data.metrics.monthlyIncome, icon: ArrowUpRight, positive: true },
       { title: "Monthly Expenses", value: data.metrics.monthlyExpense, icon: ArrowDownRight, positive: false },
-      { title: "Active Goals", value: "3", icon: Activity, positive: true, isNumber: true },
     ]
 
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-3">
           {metricCards.map((metric, i) => (
             <Card key={i} className="border-border/50 shadow-sm transition-all hover:shadow-md">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -58,7 +57,7 @@ export function DashboardClient({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {metric.isNumber ? metric.value : formatCurrency(metric.value as number, userCurrency)}
+                  {formatCurrency(metric.value, userCurrency)}
                 </div>
               </CardContent>
             </Card>
