@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -13,9 +12,20 @@ const ibmMono = IBM_Plex_Mono({
   subsets: ["latin"],
 });
 
+import type { Metadata, Viewport } from "next";
+
+export const viewport: Viewport = {
+  themeColor: "#000000",
+};
+
 export const metadata: Metadata = {
   title: "FlowSync",
   description: "Track your income and expenses seamlessly.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "FlowSync",
+  },
 };
 
 import { Providers } from "@/components/providers";
