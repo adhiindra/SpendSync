@@ -45,6 +45,7 @@ model User {
   password      String?
   image         String?
   currency      String    @default("USD")
+  language      String    @default("en")
   accounts      Account[]
   sessions      Session[]
   transactions  Transaction[]

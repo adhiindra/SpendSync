@@ -48,6 +48,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           currency: user.currency,
+          language: user.language,
         };
       }
     })
@@ -57,9 +58,13 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.currency = user.currency;
+        token.language = user.language;
       }
       if (trigger === "update" && session?.currency) {
         token.currency = session.currency;
+      }
+      if (trigger === "update" && session?.language) {
+        token.language = session.language;
       }
       return token;
     },
@@ -67,6 +72,7 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         session.user.id = token.id as string;
         session.user.currency = token.currency as string;
+        session.user.language = token.language as string;
       }
       return session;
     }

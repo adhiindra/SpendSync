@@ -6,11 +6,13 @@ declare module "next-auth" {
     user: {
       id: string
       currency: string
+      language: string
     } & DefaultSession["user"]
   }
 
   interface User {
     currency: string
+    language: string
   }
 }
 
@@ -18,5 +20,6 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string
     currency: string
+    language: string
   }
 }

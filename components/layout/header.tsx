@@ -10,17 +10,19 @@ import { SpendSyncLogo } from "@/components/ui/spend-sync-logo";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/components/providers/i18n-provider";
 import clsx from "clsx";
 
-const navItems = [
-  { name: "Dashboard", href: "/dashboard" },
-  { name: "Transactions", href: "/transactions" },
-  { name: "Reports", href: "/reports" },
-  { name: "Family", href: "/family" },
-];
-
 export function Header() {
+  const { t } = useTranslation("header");
   const { data: session } = useSession();
+
+  const navItems = [
+    { name: t("dashboard"), href: "/dashboard" },
+    { name: t("transactions"), href: "/transactions" },
+    { name: t("reports"), href: "/reports" },
+    { name: t("family"), href: "/family" },
+  ];
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
@@ -137,14 +139,14 @@ export function Header() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem render={<Link href="/settings" className="w-full cursor-pointer" />}>
                   <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                  <span>{t("settings")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => signOut({ callbackUrl: '/login' })}
                   className="text-destructive focus:text-destructive cursor-pointer"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
+                  <span>{t("logout")}</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>

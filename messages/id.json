@@ -1,0 +1,26 @@
+{
+  "header": {
+    "dashboard": "Dashboard",
+    "transactions": "Transaksi",
+    "reports": "Laporan",
+    "family": "Keluarga",
+    "my_account": "Akun Saya",
+    "settings": "Pengaturan",
+    "logout": "Keluar"
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "preferences": "Preferensi",
+    "preferences_description": "Perbarui preferensi aplikasi Anda.",
+    "base_currency": "Mata Uang Dasar",
+    "currency_placeholder": "Pilih mata uang",
+    "currency_description": "Mata uang ini akan digunakan di seluruh dashboard dan laporan Anda.",
+    "language": "Preferensi Bahasa",
+    "language_placeholder": "Pilih bahasa",
+    "language_description": "Pilih bahasa yang Anda inginkan untuk antarmuka aplikasi.",
+    "save": "Simpan Perubahan",
+    "saving": "Menyimpan...",
+    "success": "Pengaturan disimpan",
+    "error": "Gagal menyimpan pengaturan"
+  }
+}

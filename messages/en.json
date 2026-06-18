@@ -1,0 +1,26 @@
+{
+  "header": {
+    "dashboard": "Dashboard",
+    "transactions": "Transactions",
+    "reports": "Reports",
+    "family": "Family",
+    "my_account": "My Account",
+    "settings": "Settings",
+    "logout": "Log out"
+  },
+  "settings": {
+    "title": "Settings",
+    "preferences": "Preferences",
+    "preferences_description": "Update your application preferences.",
+    "base_currency": "Base Currency",
+    "currency_placeholder": "Select currency",
+    "currency_description": "This currency will be used across all your dashboards and reports.",
+    "language": "Language Preference",
+    "language_placeholder": "Select language",
+    "language_description": "Select your preferred language for the application interface.",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "success": "Settings saved",
+    "error": "Failed to save settings"
+  }
+}
