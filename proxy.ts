@@ -38,8 +38,10 @@ export const config = {
      * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
+     * - favicon.ico, sitemap.xml, robots.txt, manifest.webmanifest (metadata files)
+     * - sw.js, workbox-* (service worker files)
+     * - icon.svg, apple-icon.png (PWA icons)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|manifest.webmanifest|icon.svg|apple-icon.png|sw.js|workbox-.*).*)",
   ],
 };
