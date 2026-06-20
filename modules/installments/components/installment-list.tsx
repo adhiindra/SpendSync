@@ -26,16 +26,24 @@ export function InstallmentList({ installments, userCurrency }: { installments: 
             <Card className="hover:border-primary/50 transition-colors h-full flex flex-col">
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
-                  <CardTitle className="text-lg">{installment.name}</CardTitle>
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                    installment.status === 'COMPLETED' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                  }`}>
+                  <div className="space-y-1">
+                    <CardTitle className="text-lg">{installment.name}</CardTitle>
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center rounded-md bg-secondary/50 px-2 py-1 text-xs font-medium text-secondary-foreground ring-1 ring-inset ring-secondary-foreground/10">
+                        {installment.category || "Other"}
+                      </span>
+                      <CardDescription>
+                        {totalPayments} Months
+                      </CardDescription>
+                    </div>
+
+                  </div>
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${installment.status === 'COMPLETED' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                    }`}>
                     {installment.status}
                   </span>
                 </div>
-                <CardDescription>
-                  {totalPayments} Months
-                </CardDescription>
+
               </CardHeader>
               <CardContent className="mt-auto">
                 <div className="space-y-4">

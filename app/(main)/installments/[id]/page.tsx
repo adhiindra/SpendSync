@@ -39,10 +39,16 @@ export default async function InstallmentPage({ params }: { params: Promise<{ id
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center justify-between">
             <h2 className="text-3xl font-bold tracking-tight">{installment.name}</h2>
-            <span className={`text-sm font-medium px-3 py-1 rounded-full w-fit ${installment.status === 'COMPLETED' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-              }`}>
-              {installment.status}
-            </span>
+            <div className="flex flex-col items-end gap-2">
+              <span className={`text-sm font-medium px-3 py-1 rounded-full w-fit ${installment.status === 'COMPLETED' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                }`}>
+                {installment.status}
+              </span>
+              <span className="inline-flex w-fit items-center rounded-md bg-secondary/50 px-2 py-1 text-xs font-medium text-secondary-foreground ring-1 ring-inset ring-secondary-foreground/10">
+                {installment.category || "Other"}
+              </span>
+            </div>
+
           </div>
         </div>
 

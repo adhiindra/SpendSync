@@ -46,6 +46,7 @@ export async function createInstallment(data: CreateInstallmentInput) {
     data: {
       userId: session.user.id,
       name: data.name,
+      category: data.category || "Other",
       totalAmount: data.totalAmount,
       durationMonths: data.durationMonths,
       monthlyPayment,

@@ -23,6 +23,7 @@ export function CreateInstallmentDialog({ userCurrency }: { userCurrency: string
 
   const [formData, setFormData] = useState({
     name: "",
+    category: "",
     totalAmount: "",
     durationMonths: "",
     startDate: new Date().toISOString().split('T')[0],
@@ -40,6 +41,7 @@ export function CreateInstallmentDialog({ userCurrency }: { userCurrency: string
     try {
       await createInstallment({
         name: formData.name,
+        category: formData.category,
         totalAmount: Number(formData.totalAmount),
         durationMonths: Number(formData.durationMonths),
         startDate: new Date(formData.startDate),
@@ -48,6 +50,7 @@ export function CreateInstallmentDialog({ userCurrency }: { userCurrency: string
       setOpen(false)
       setFormData({
         name: "",
+        category: "",
         totalAmount: "",
         durationMonths: "",
         startDate: new Date().toISOString().split('T')[0],
@@ -78,6 +81,17 @@ export function CreateInstallmentDialog({ userCurrency }: { userCurrency: string
               placeholder="e.g., Car Loan, iPhone"
               required
               value={formData.name}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="category">Category (Optional)</Label>
+            <Input
+              id="category"
+              name="category"
+              placeholder="e.g., Bank A, Electronics"
+              value={formData.category}
               onChange={handleChange}
             />
           </div>
