@@ -13,6 +13,8 @@ export const metadata: Metadata = {
     title: "Installments",
 }
 
+import { InstallmentSyncProvider } from "@/modules/installments/components/installment-sync-provider"
+
 export default async function InstallmentsPage() {
     const session = await getServerSession(authOptions)
     const userCurrency = session?.user?.currency || "USD"
@@ -34,6 +36,7 @@ export default async function InstallmentsPage() {
             <OrbBackground className="opacity-40" />
 
             <div className="flex-1 w-full max-w-7xl mx-auto p-4 md:p-6 lg:p-8 relative z-10 flex flex-col gap-6 lg:gap-8">
+                <InstallmentSyncProvider installments={installments} />
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
                     <h2 className="text-3xl font-bold tracking-tight">Installments</h2>
                     <CreateInstallmentDialog userCurrency={userCurrency} />

@@ -9,6 +9,7 @@ import { buttonVariants } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { InstallmentSyncProvider } from "@/modules/installments/components/installment-sync-provider"
 
 export const metadata: Metadata = {
   title: "Installment Details",
@@ -29,6 +30,7 @@ export default async function InstallmentPage({ params }: { params: Promise<{ id
       <OrbBackground className="opacity-40" />
 
       <div className="flex-1 w-full max-w-4xl mx-auto p-4 md:p-6 lg:p-8 relative z-10 flex flex-col gap-6 lg:gap-8">
+        <InstallmentSyncProvider installments={[installment]} />
         <div>
           <div className="flex items-center justify-between mb-4">
             <Link href="/installments" className={buttonVariants({ variant: "ghost", size: "sm", className: "-ml-3 text-muted-foreground hover:text-foreground" })}>

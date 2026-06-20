@@ -5,6 +5,7 @@ export type InstallmentWithPayments = Installment & {
 }
 
 export interface CreateInstallmentInput {
+  id?: string
   name: string
   category?: string
   totalAmount: number

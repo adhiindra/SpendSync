@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label"
 import { createInstallment } from "../actions"
 
 import { formatCurrency } from "@/lib/format"
+import { db } from "@/lib/offline-db"
 
 export function CreateInstallmentDialog({ userCurrency }: { userCurrency: string }) {
   const [open, setOpen] = useState(false)
@@ -38,15 +39,43 @@ export function CreateInstallmentDialog({ userCurrency }: { userCurrency: string
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    const newId = crypto.randomUUID()
+    const monthlyPayment = Number(formData.totalAmount) / Number(formData.durationMonths)
+    
     try {
-      await createInstallment({
+      // 1. Optimistic Update (Write to local DB)
+      const startDate = new Date(formData.startDate)
+      await db.installments.put({
+        id: newId,
+        userId: "local-user", // We'll rely on sync provider to fetch correct userId later, or we can assume it doesn't matter for local filtering if only one user
         name: formData.name,
-        category: formData.category,
+        category: formData.category || "Other",
         totalAmount: Number(formData.totalAmount),
         durationMonths: Number(formData.durationMonths),
-        startDate: new Date(formData.startDate),
-        notes: formData.notes
+        monthlyPayment: monthlyPayment,
+        startDate: startDate,
+        status: "ACTIVE",
+        notes: formData.notes || null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        syncStatus: 'PENDING_CREATE'
       })
+
+      // Generate dummy payments for local display
+      for (let i = 0; i < Number(formData.durationMonths); i++) {
+        const paymentDate = new Date(startDate)
+        paymentDate.setMonth(paymentDate.getMonth() + i)
+        await db.installmentPayments.put({
+          id: crypto.randomUUID(),
+          installmentId: newId,
+          amount: monthlyPayment,
+          dueDate: paymentDate,
+          isPaid: false,
+          paidDate: null,
+          syncStatus: 'PENDING_CREATE'
+        })
+      }
+
       setOpen(false)
       setFormData({
         name: "",
@@ -56,10 +85,29 @@ export function CreateInstallmentDialog({ userCurrency }: { userCurrency: string
         startDate: new Date().toISOString().split('T')[0],
         notes: ""
       })
-      router.refresh()
+
+      // 2. Attempt to sync to server
+      try {
+        await createInstallment({
+          id: newId,
+          name: formData.name,
+          category: formData.category,
+          totalAmount: Number(formData.totalAmount),
+          durationMonths: Number(formData.durationMonths),
+          startDate: startDate,
+          notes: formData.notes
+        })
+        
+        // If successful, mark as synced
+        await db.installments.update(newId, { syncStatus: 'SYNCED' })
+        router.refresh()
+      } catch (serverErr) {
+        console.warn("Offline or server error, item saved locally:", serverErr)
+        // It's saved locally, we don't throw an error to the user
+      }
+
     } catch (error) {
       console.error(error)
-      // Normally we'd show a toast here
     } finally {
       setLoading(false)
     }

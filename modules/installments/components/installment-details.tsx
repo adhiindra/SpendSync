@@ -10,16 +10,48 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { formatCurrency } from "@/lib/format"
 import { Edit2, Check, X } from "lucide-react"
+import { useLiveQuery } from "dexie-react-hooks"
+import { db } from "@/lib/offline-db"
 
-export function InstallmentDetails({ installment, userCurrency }: { installment: InstallmentWithPayments, userCurrency: string }) {
+export function InstallmentDetails({ installment: initialInstallment, userCurrency }: { installment: InstallmentWithPayments, userCurrency: string }) {
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editAmount, setEditAmount] = useState<string>("")
 
+  const localInstallmentData = useLiveQuery(async () => {
+    const inst = await db.installments.get(initialInstallment.id)
+    if (!inst) return null;
+    const payments = await db.installmentPayments.where('installmentId').equals(initialInstallment.id).sortBy('dueDate')
+    return { ...inst, payments } as unknown as InstallmentWithPayments
+  })
+
+  const installment = localInstallmentData || initialInstallment
+
   const handleToggle = async (paymentId: string, currentStatus: boolean) => {
     setLoadingId(paymentId)
+    const newStatus = !currentStatus
     try {
-      await togglePaymentStatus(paymentId, !currentStatus)
+      // Optimistic update
+      await db.installmentPayments.update(paymentId, { 
+        isPaid: newStatus,
+        paidDate: newStatus ? new Date() : null,
+        syncStatus: 'PENDING_UPDATE'
+      })
+
+      const allPayments = await db.installmentPayments.where('installmentId').equals(installment.id).toArray()
+      const allPaid = allPayments.every(p => p.isPaid)
+      await db.installments.update(installment.id, { 
+        status: allPaid ? 'COMPLETED' : 'ACTIVE',
+        syncStatus: 'PENDING_UPDATE'
+      })
+
+      try {
+        await togglePaymentStatus(paymentId, newStatus)
+        await db.installmentPayments.update(paymentId, { syncStatus: 'SYNCED' })
+        await db.installments.update(installment.id, { syncStatus: 'SYNCED' })
+      } catch(err) {
+        console.warn("Offline, update queued locally:", err)
+      }
     } catch (error) {
       console.error(error)
     } finally {
@@ -36,9 +68,16 @@ export function InstallmentDetails({ installment, userCurrency }: { installment:
     if (!editAmount || isNaN(Number(editAmount))) return
     
     setLoadingId(paymentId)
+    const newAmount = Number(editAmount)
     try {
-      await updatePaymentAmount(paymentId, Number(editAmount))
+      await db.installmentPayments.update(paymentId, { amount: newAmount, syncStatus: 'PENDING_UPDATE' })
       setEditingId(null)
+      try {
+        await updatePaymentAmount(paymentId, newAmount)
+        await db.installmentPayments.update(paymentId, { syncStatus: 'SYNCED' })
+      } catch(err) {
+        console.warn("Offline, update queued locally", err)
+      }
     } catch (error) {
       console.error(error)
     } finally {

@@ -1,10 +1,24 @@
+"use client"
+
 import Link from "next/link"
 import { InstallmentWithPayments } from "../types"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { formatCurrency } from "@/lib/format"
+import { useLiveQuery } from "dexie-react-hooks"
+import { db } from "@/lib/offline-db"
 
-export function InstallmentList({ installments, userCurrency }: { installments: InstallmentWithPayments[], userCurrency: string }) {
+export function InstallmentList({ installments: initialInstallments, userCurrency }: { installments: InstallmentWithPayments[], userCurrency: string }) {
+  const localInstallments = useLiveQuery(async () => {
+    const insts = await db.installments.orderBy('createdAt').reverse().toArray();
+    const withPayments = await Promise.all(insts.map(async (i) => {
+      const payments = await db.installmentPayments.where('installmentId').equals(i.id).sortBy('dueDate');
+      return { ...i, payments } as unknown as InstallmentWithPayments;
+    }));
+    return withPayments;
+  });
+
+  const installments = localInstallments || initialInstallments;
   if (installments.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center border rounded-xl border-dashed bg-muted/20">

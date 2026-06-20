@@ -44,6 +44,7 @@ export async function createInstallment(data: CreateInstallmentInput) {
 
   const installment = await prisma.installment.create({
     data: {
+      id: data.id,
       userId: session.user.id,
       name: data.name,
       category: data.category || "Other",
