@@ -20,6 +20,10 @@ export async function proxy(req: NextRequest) {
 
   // If the user is NOT authenticated and trying to access a protected route
   if (!isAuth) {
+    // Allow unauthenticated users to access the landing page
+    if (req.nextUrl.pathname === "/") {
+      return NextResponse.next();
+    }
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
